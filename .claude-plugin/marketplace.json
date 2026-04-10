@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "plugins": {
+    "constellation": {
+      "version": "0.1.0",
+      "description": "Interactive project generator — visual web UI to select your tech stack, then AI-generates a fully functional project",
+      "source": {
+        "source": "local",
+        "path": "./"
+      }
+    }
+  }
+}
