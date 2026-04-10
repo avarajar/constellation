@@ -3,7 +3,7 @@
  */
 import type { ServerResponse } from 'node:http';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRegistry } from '../registry/index.js';
 import { validateSelection } from '../validators/index.js';
@@ -151,7 +151,7 @@ export async function handleGenerate(body: unknown, res: ServerResponse): Promis
       .filter((t) => t !== undefined);
 
     const templateDir = join(__dirname, '..', 'templates');
-    const outputDir = selection.outputDir;
+    const outputDir = resolve(selection.outputDir);
 
     const ctx: GeneratorContext = {
       selection,

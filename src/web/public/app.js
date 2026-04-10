@@ -685,11 +685,15 @@ function showSuccess(section, result) {
 
   const details = $('#successDetails', section);
   const fileCount = result.files?.length || 0;
-  const dir = state.project.outputDir || './' + state.project.name;
+  const dir = result.outputDir || state.project.outputDir || './' + state.project.name;
 
   let html = `
     <p class="success-detail"><strong>${fileCount}</strong> files generated</p>
-    <p class="success-detail">Output: <strong>${escHtml(dir)}</strong></p>
+    <p class="success-detail">Output: <code>${escHtml(dir)}</code></p>
+    <div class="success-next-steps">
+      <p><strong>Next steps:</strong></p>
+      <pre><code>cd ${escHtml(dir)}\nnpm install\nnpm run dev</code></pre>
+    </div>
   `;
 
   if (result.messages?.length) {
