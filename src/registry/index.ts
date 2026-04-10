@@ -115,6 +115,10 @@ function fuzzyScore(query: string, haystack: string): number {
   return 0;
 }
 
+// ─── Runtime Technologies (persists across createRegistry calls) ───
+
+const runtimeTechs: Technology[] = [];
+
 // ─── Registry Implementation ───────────────────────────────────────
 
 class Registry implements TechRegistry {
@@ -158,11 +162,22 @@ class Registry implements TechRegistry {
   getCategoryGroups(): TechCategoryGroup[] {
     return CATEGORY_GROUPS;
   }
+
+  addTechnology(tech: Technology): void {
+    // Avoid duplicates
+    if (!this.technologies.some((t) => t.id === tech.id)) {
+      this.technologies.push(tech);
+    }
+    // Also persist in the module-level array so future createRegistry() calls include it
+    if (!runtimeTechs.some((t) => t.id === tech.id)) {
+      runtimeTechs.push(tech);
+    }
+  }
 }
 
 // ─── Factory ───────────────────────────────────────────────────────
 
 export function createRegistry(): TechRegistry {
-  const technologies = loadAllTechnologies();
+  const technologies = [...loadAllTechnologies(), ...runtimeTechs];
   return new Registry(technologies);
 }

@@ -11,6 +11,9 @@ import {
   handleGetCategories,
   handleValidate,
   handleGenerate,
+  handleCreateBlueprint,
+  handleSearchOnline,
+  handleAddTechnology,
 } from './api.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -91,6 +94,19 @@ export function startServer(port: number): void {
         return;
       }
 
+      if (pathname === '/api/search-online' && method === 'GET') {
+        const q = url.searchParams.get('q') || '';
+        const ecosystem = url.searchParams.get('ecosystem') || 'npm';
+        await handleSearchOnline(q, ecosystem, res);
+        return;
+      }
+
+      if (pathname === '/api/add-technology' && method === 'POST') {
+        const body = await parseBody(req);
+        handleAddTechnology(body, res);
+        return;
+      }
+
       if (pathname === '/api/validate' && method === 'POST') {
         const body = await parseBody(req);
         await handleValidate(body, res);
@@ -100,6 +116,12 @@ export function startServer(port: number): void {
       if (pathname === '/api/generate' && method === 'POST') {
         const body = await parseBody(req);
         await handleGenerate(body, res);
+        return;
+      }
+
+      if (pathname === '/api/blueprint' && method === 'POST') {
+        const body = await parseBody(req);
+        await handleCreateBlueprint(body, res);
         return;
       }
 

@@ -167,10 +167,16 @@
         <button class="btn btn-ghost btn-prev" data-dir="prev">
           <span class="btn-arrow">&larr;</span> Back
         </button>
-        <button class="btn btn-primary btn-generate" id="btnGenerate">
-          <span class="btn-generate-text">Generate Project</span>
-          <span class="spinner hidden"></span>
-        </button>
+        <div class="generate-buttons">
+          <button class="btn btn-primary btn-generate" id="btnGenerate">
+            <span class="btn-generate-text">Generate with Templates</span>
+            <span class="spinner hidden"></span>
+          </button>
+          <button class="btn btn-accent btn-generate" id="btnBlueprint">
+            <span class="btn-generate-text">Generate Blueprint for Claude Code</span>
+            <span class="spinner hidden"></span>
+          </button>
+        </div>
       </div>
 
       <!-- Success overlay (hidden until generation completes) -->
@@ -182,6 +188,19 @@
           <button class="btn btn-primary" id="btnNewProject">Start New Project</button>
         </div>
         <canvas id="confettiCanvas"></canvas>
+      </div>
+
+      <!-- Blueprint overlay (hidden until blueprint generation completes) -->
+      <div class="success-overlay hidden" id="blueprintOverlay">
+        <div class="success-card success-card-wide">
+          <div class="success-icon">&#9998;</div>
+          <h3>Blueprint Generated!</h3>
+          <div id="blueprintDetails"></div>
+          <div class="blueprint-actions">
+            <button class="btn btn-ghost" id="btnCopyPath">Copy Path</button>
+            <button class="btn btn-primary" id="btnNewProjectBp">Start New Project</button>
+          </div>
+        </div>
       </div>
     </section>
   </template>

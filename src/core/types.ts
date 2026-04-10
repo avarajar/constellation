@@ -144,6 +144,7 @@ export interface TechRegistry {
   getById(id: string): Technology | undefined;
   search(query: string): Technology[];
   getCategoryGroups(): TechCategoryGroup[];
+  addTechnology(tech: Technology): void;
 }
 
 // ─── Template ───────────────────────────────────────────────────────

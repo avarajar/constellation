@@ -151,9 +151,9 @@ const debouncedValidate = debounce(async () => {
   renderValidationBadges();
 }, 300);
 
-async function generate() {
+function buildSelectionBody() {
   const sel = state.technologies.filter(t => state.selected.has(t.id));
-  const body = {
+  return {
     name: state.project.name,
     description: state.project.description || undefined,
     outputDir: state.project.outputDir || './' + state.project.name,
@@ -163,7 +163,14 @@ async function generate() {
       : undefined,
     technologies: sel.map(t => ({ id: t.id, category: t.category })),
   };
-  return api('POST', '/api/generate', body);
+}
+
+async function generate() {
+  return api('POST', '/api/generate', buildSelectionBody());
+}
+
+async function generateBlueprintApi() {
+  return api('POST', '/api/blueprint', buildSelectionBody());
 }
 
 // ── Toast Notifications ────────────────────────────────────
@@ -309,6 +316,14 @@ function renderStep2() {
   const searchInput = $('#techSearch', section);
   searchInput.value = state.searchQuery;
 
+  // Add "Add Custom" button next to the search bar
+  const searchBar = $('.tech-search-bar', section);
+  const addCustomBtn = document.createElement('button');
+  addCustomBtn.className = 'custom-tech-btn';
+  addCustomBtn.textContent = '\uFF0B Add Custom';
+  addCustomBtn.addEventListener('click', () => openCustomTechModal(section));
+  searchBar.appendChild(addCustomBtn);
+
   // Search
   searchInput.addEventListener('input', () => {
     state.searchQuery = searchInput.value;
@@ -350,6 +365,218 @@ function renderStep2() {
       updateGroupCounts(section);
     }
   });
+}
+
+// ── Custom Technology Modal ───────────────────────────────
+function openCustomTechModal(section) {
+  // Remove existing modal if any
+  const existing = document.querySelector('.custom-tech-modal');
+  if (existing) existing.remove();
+
+  let selectedEcosystem = 'npm';
+  let selectedCategory = 'backend';
+
+  const modal = document.createElement('div');
+  modal.className = 'custom-tech-modal';
+  modal.innerHTML = `
+    <div class="custom-tech-modal-content">
+      <div class="custom-tech-modal-header">
+        <h3>Add Custom Technology</h3>
+        <button class="custom-tech-close">&times;</button>
+      </div>
+
+      <div class="ecosystem-selector" data-role="ecosystem">
+        <button class="ecosystem-btn active" data-eco="npm">npm</button>
+        <button class="ecosystem-btn" data-eco="pypi">PyPI</button>
+        <button class="ecosystem-btn" data-eco="crates">Crates.io</button>
+      </div>
+
+      <div class="custom-tech-search-row">
+        <input type="text" class="custom-tech-search-input" placeholder="Search packages..." autocomplete="off" spellcheck="false">
+        <button class="custom-tech-search-btn">Search</button>
+      </div>
+
+      <div class="custom-tech-category-row">
+        <label>Category:</label>
+        <div class="ecosystem-selector" data-role="category">
+          <button class="ecosystem-btn active" data-cat="backend">Backend</button>
+          <button class="ecosystem-btn" data-cat="frontend">Frontend</button>
+          <button class="ecosystem-btn" data-cat="database">Database</button>
+          <button class="ecosystem-btn" data-cat="build">Build</button>
+          <button class="ecosystem-btn" data-cat="testing-unit">Testing</button>
+        </div>
+      </div>
+
+      <div class="custom-tech-results">
+        <div class="custom-tech-empty">Search for a package above to get started.</div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const searchInput = $('.custom-tech-search-input', modal);
+  const searchBtn = $('.custom-tech-search-btn', modal);
+  const resultsContainer = $('.custom-tech-results', modal);
+  const closeBtn = $('.custom-tech-close', modal);
+
+  // Close on backdrop or close button
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+  closeBtn.addEventListener('click', () => modal.remove());
+
+  // Escape to close
+  function onKeyDown(e) {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', onKeyDown);
+    }
+  }
+  document.addEventListener('keydown', onKeyDown);
+
+  // Ecosystem selector
+  modal.addEventListener('click', (e) => {
+    const ecoBtn = e.target.closest('[data-eco]');
+    if (ecoBtn) {
+      selectedEcosystem = ecoBtn.dataset.eco;
+      const parent = ecoBtn.parentElement;
+      $$('.ecosystem-btn', parent).forEach(b => b.classList.toggle('active', b === ecoBtn));
+    }
+
+    const catBtn = e.target.closest('[data-cat]');
+    if (catBtn) {
+      selectedCategory = catBtn.dataset.cat;
+      const parent = catBtn.parentElement;
+      $$('.ecosystem-btn', parent).forEach(b => b.classList.toggle('active', b === catBtn));
+    }
+  });
+
+  // Search handler
+  async function doSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    searchBtn.disabled = true;
+    resultsContainer.innerHTML = `
+      <div class="custom-tech-searching">
+        <span class="spinner"></span>
+        <span>Searching ${escHtml(selectedEcosystem)}...</span>
+      </div>
+    `;
+
+    try {
+      const data = await api('GET', `/api/search-online?q=${encodeURIComponent(query)}&ecosystem=${selectedEcosystem}`);
+
+      if (data.error && data.results.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="custom-tech-error">${escHtml(data.error)}</div>
+        `;
+      } else if (data.results.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="custom-tech-empty">No packages found for "${escHtml(query)}".</div>
+        `;
+      } else {
+        resultsContainer.innerHTML = '';
+        for (const pkg of data.results) {
+          const item = document.createElement('div');
+          item.className = 'custom-tech-result';
+          item.innerHTML = `
+            <div class="custom-tech-result-head">
+              <span class="custom-tech-result-name">${escHtml(pkg.name)}</span>
+              <span class="custom-tech-result-version">${escHtml(pkg.version)}</span>
+              <span class="custom-tech-result-eco">${escHtml(pkg.ecosystem)}</span>
+            </div>
+            <div class="custom-tech-result-desc">${escHtml(pkg.description)}</div>
+          `;
+
+          item.addEventListener('click', () => addCustomTechnology(pkg, selectedCategory, modal, section));
+          resultsContainer.appendChild(item);
+        }
+      }
+    } catch (err) {
+      resultsContainer.innerHTML = `
+        <div class="custom-tech-error">Search failed: ${escHtml(err.message)}</div>
+      `;
+    } finally {
+      searchBtn.disabled = false;
+    }
+  }
+
+  searchBtn.addEventListener('click', doSearch);
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  searchInput.focus();
+}
+
+async function addCustomTechnology(pkg, category, modal, section) {
+  try {
+    const result = await api('POST', '/api/add-technology', {
+      id: pkg.id,
+      name: pkg.name,
+      version: pkg.version,
+      description: pkg.description,
+      homepage: pkg.homepage,
+      ecosystem: pkg.ecosystem,
+      category: category,
+    });
+
+    if (result.success && result.technology) {
+      // Add to local state
+      const tech = result.technology;
+      state.technologies.push(tech);
+
+      // Ensure the technology appears in the appropriate group
+      let placed = false;
+      for (const group of state.groups) {
+        for (const cat of group.categories) {
+          if (cat.id === tech.category) {
+            cat.technologies.push(tech);
+            placed = true;
+            break;
+          }
+        }
+        if (placed) break;
+      }
+
+      // If not placed in any existing group, create/add to a "Custom" group
+      if (!placed) {
+        let customGroup = state.groups.find(g => g.name === 'Custom');
+        if (!customGroup) {
+          customGroup = {
+            name: 'Custom',
+            description: 'Custom technologies added via online search',
+            multiSelect: true,
+            required: false,
+            categories: [{ id: tech.category, technologies: [tech] }],
+          };
+          state.groups.push(customGroup);
+        } else {
+          let catEntry = customGroup.categories.find(c => c.id === tech.category);
+          if (!catEntry) {
+            catEntry = { id: tech.category, technologies: [] };
+            customGroup.categories.push(catEntry);
+          }
+          catEntry.technologies.push(tech);
+        }
+      }
+
+      // Auto-select the newly added technology
+      state.selected.add(tech.id);
+
+      // Close modal and re-render
+      modal.remove();
+      renderGroupSidebar(section);
+      renderTechGrid(section);
+      updateGroupCounts(section);
+
+      toast(`Added "${tech.name}" to your stack`, 'success');
+    }
+  } catch (err) {
+    toast('Failed to add technology: ' + err.message, 'error');
+  }
 }
 
 function renderGroupSidebar(section) {
@@ -540,7 +767,7 @@ function renderStep3() {
   // Tree preview
   renderProjectTree(section);
 
-  // Generate button
+  // Generate with Templates button
   const genBtn = $('#btnGenerate', section);
   genBtn.addEventListener('click', async () => {
     if (state.generating) return;
@@ -557,8 +784,29 @@ function renderStep3() {
       toast('Generation failed: ' + err.message, 'error');
       state.generating = false;
       genBtn.disabled = false;
-      $('.btn-generate-text', genBtn).textContent = 'Generate Project';
+      $('.btn-generate-text', genBtn).textContent = 'Generate with Templates';
       $('.spinner', genBtn).classList.add('hidden');
+    }
+  });
+
+  // Generate Blueprint for Claude Code button
+  const bpBtn = $('#btnBlueprint', section);
+  bpBtn.addEventListener('click', async () => {
+    if (state.generating) return;
+    state.generating = true;
+    bpBtn.disabled = true;
+    $('.btn-generate-text', bpBtn).textContent = 'Generating Blueprint...';
+    $('.spinner', bpBtn).classList.remove('hidden');
+
+    try {
+      const result = await generateBlueprintApi();
+      showBlueprintSuccess(section, result);
+    } catch (err) {
+      toast('Blueprint generation failed: ' + err.message, 'error');
+      state.generating = false;
+      bpBtn.disabled = false;
+      $('.btn-generate-text', bpBtn).textContent = 'Generate Blueprint for Claude Code';
+      $('.spinner', bpBtn).classList.add('hidden');
     }
   });
 
@@ -566,7 +814,7 @@ function renderStep3() {
   section.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (btn?.dataset.dir === 'prev') prevStep();
-    if (btn?.id === 'btnNewProject') {
+    if (btn?.id === 'btnNewProject' || btn?.id === 'btnNewProjectBp') {
       // Reset
       state.step = 1;
       state.project = { name: '', description: '', outputDir: '', mode: 'new', monorepo: { enabled: false, tool: null } };
@@ -576,6 +824,16 @@ function renderStep3() {
       state.generating = false;
       state.generationResult = null;
       render();
+    }
+    if (btn?.id === 'btnCopyPath') {
+      const pathEl = $('#blueprintPathValue', section);
+      if (pathEl) {
+        navigator.clipboard.writeText(pathEl.textContent).then(() => {
+          toast('Path copied to clipboard', 'success');
+        }).catch(() => {
+          toast('Failed to copy path', 'error');
+        });
+      }
     }
   });
 }
@@ -708,6 +966,29 @@ function showSuccess(section, result) {
 
   // Confetti
   launchConfetti($('#confettiCanvas', section));
+}
+
+function showBlueprintSuccess(section, result) {
+  const overlay = $('#blueprintOverlay', section);
+  overlay.classList.remove('hidden');
+
+  const details = $('#blueprintDetails', section);
+  const bpPath = result.path || '';
+
+  let html = `
+    <p class="success-detail">Blueprint saved to:</p>
+    <p class="success-detail"><code id="blueprintPathValue">${escHtml(bpPath)}</code></p>
+    <div class="success-next-steps">
+      <p><strong>Next step:</strong> Open Claude Code and run:</p>
+      <pre><code>/constellation ${escHtml(bpPath)}</code></pre>
+    </div>
+    <details class="blueprint-preview">
+      <summary>Preview Blueprint YAML</summary>
+      <pre class="blueprint-yaml"><code>${escHtml(result.blueprint || '')}</code></pre>
+    </details>
+  `;
+
+  details.innerHTML = html;
 }
 
 // ── Confetti ───────────────────────────────────────────────
