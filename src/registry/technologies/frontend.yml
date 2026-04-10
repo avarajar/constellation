@@ -1,0 +1,268 @@
+technologies:
+  # ── Frameworks ──────────────────────────────────────────────────────
+  - id: "react"
+    name: "React"
+    category: "frontend"
+    description: "A JavaScript library for building user interfaces"
+    language: "typescript"
+    requires: []
+    conflicts: ["vue", "svelte", "angular", "solid", "qwik"]
+    tags: ["ui", "spa", "component"]
+    version: "19.0.0"
+    homepage: "https://react.dev"
+
+  - id: "vue"
+    name: "Vue"
+    category: "frontend"
+    description: "The progressive JavaScript framework for building UIs"
+    language: "typescript"
+    requires: []
+    conflicts: ["react", "svelte", "angular", "solid", "qwik"]
+    tags: ["ui", "spa", "component", "progressive"]
+    version: "3.5.0"
+    homepage: "https://vuejs.org"
+
+  - id: "svelte"
+    name: "Svelte"
+    category: "frontend"
+    description: "Cybernetically enhanced web apps with compile-time reactivity"
+    language: "typescript"
+    requires: []
+    conflicts: ["react", "vue", "angular", "solid", "qwik"]
+    tags: ["ui", "spa", "compiler", "component"]
+    version: "5.0.0"
+    homepage: "https://svelte.dev"
+
+  - id: "nextjs"
+    name: "Next.js"
+    category: "frontend"
+    description: "The React framework for production-grade full-stack web apps"
+    language: "typescript"
+    requires: ["react"]
+    conflicts: ["nuxt", "astro"]
+    tags: ["ssr", "ssg", "fullstack", "meta-framework"]
+    version: "15.0.0"
+    homepage: "https://nextjs.org"
+
+  - id: "nuxt"
+    name: "Nuxt"
+    category: "frontend"
+    description: "The intuitive Vue meta-framework for full-stack web apps"
+    language: "typescript"
+    requires: ["vue"]
+    conflicts: ["nextjs", "astro"]
+    tags: ["ssr", "ssg", "fullstack", "meta-framework"]
+    version: "3.14.0"
+    homepage: "https://nuxt.com"
+
+  - id: "astro"
+    name: "Astro"
+    category: "frontend"
+    description: "The web framework for content-driven websites with islands architecture"
+    language: "typescript"
+    requires: []
+    conflicts: ["nextjs", "nuxt"]
+    tags: ["ssg", "islands", "content", "mpa"]
+    version: "5.0.0"
+    homepage: "https://astro.build"
+
+  - id: "angular"
+    name: "Angular"
+    category: "frontend"
+    description: "A platform for building mobile and desktop web applications"
+    language: "typescript"
+    requires: []
+    conflicts: ["react", "vue", "svelte", "solid", "qwik"]
+    tags: ["ui", "spa", "enterprise", "component"]
+    version: "19.0.0"
+    homepage: "https://angular.dev"
+
+  - id: "solid"
+    name: "Solid"
+    category: "frontend"
+    description: "A declarative, efficient, and flexible JavaScript library for building UIs"
+    language: "typescript"
+    requires: []
+    conflicts: ["react", "vue", "svelte", "angular", "qwik"]
+    tags: ["ui", "spa", "reactive", "fine-grained"]
+    version: "1.9.0"
+    homepage: "https://www.solidjs.com"
+
+  - id: "qwik"
+    name: "Qwik"
+    category: "frontend"
+    description: "A new kind of web framework that achieves instant-on interactivity"
+    language: "typescript"
+    requires: []
+    conflicts: ["react", "vue", "svelte", "angular", "solid"]
+    tags: ["ui", "resumable", "lazy-loading"]
+    version: "1.12.0"
+    homepage: "https://qwik.dev"
+
+  # ── CSS ─────────────────────────────────────────────────────────────
+  - id: "tailwind"
+    name: "Tailwind CSS"
+    category: "css"
+    description: "A utility-first CSS framework for rapid UI development"
+    language: "css"
+    requires: []
+    conflicts: []
+    tags: ["css", "utility", "responsive"]
+    version: "4.0.0"
+    homepage: "https://tailwindcss.com"
+
+  - id: "styled-components"
+    name: "Styled Components"
+    category: "css"
+    description: "CSS-in-JS library for styling React components"
+    language: "typescript"
+    requires: ["react"]
+    conflicts: []
+    tags: ["css", "css-in-js", "component"]
+    version: "6.1.0"
+    homepage: "https://styled-components.com"
+
+  - id: "css-modules"
+    name: "CSS Modules"
+    category: "css"
+    description: "Locally scoped CSS class names to avoid global conflicts"
+    language: "css"
+    requires: []
+    conflicts: []
+    tags: ["css", "scoped", "modular"]
+    version: "1.0.0"
+    homepage: "https://github.com/css-modules/css-modules"
+
+  - id: "sass"
+    name: "Sass"
+    category: "css"
+    description: "A mature CSS extension language with variables, nesting, and mixins"
+    language: "scss"
+    requires: []
+    conflicts: []
+    tags: ["css", "preprocessor", "variables", "nesting"]
+    version: "1.80.0"
+    homepage: "https://sass-lang.com"
+
+  - id: "postcss"
+    name: "PostCSS"
+    category: "css"
+    description: "A tool for transforming CSS with JavaScript plugins"
+    language: "css"
+    requires: []
+    conflicts: []
+    tags: ["css", "plugins", "transform"]
+    version: "8.5.0"
+    homepage: "https://postcss.org"
+
+  # ── Build Tools ─────────────────────────────────────────────────────
+  - id: "vite"
+    name: "Vite"
+    category: "build"
+    description: "Next generation frontend tooling with instant HMR"
+    language: "typescript"
+    requires: []
+    conflicts: ["webpack"]
+    tags: ["bundler", "hmr", "esm", "fast"]
+    version: "6.0.0"
+    homepage: "https://vite.dev"
+
+  - id: "webpack"
+    name: "Webpack"
+    category: "build"
+    description: "A module bundler for modern JavaScript applications"
+    language: "typescript"
+    requires: []
+    conflicts: ["vite"]
+    tags: ["bundler", "module", "loaders"]
+    version: "5.97.0"
+    homepage: "https://webpack.js.org"
+
+  - id: "turbopack"
+    name: "Turbopack"
+    category: "build"
+    description: "An incremental bundler optimized for Next.js"
+    language: "typescript"
+    requires: ["nextjs"]
+    conflicts: ["vite", "webpack"]
+    tags: ["bundler", "incremental", "rust"]
+    version: "2.0.0"
+    homepage: "https://turbo.build/pack"
+
+  - id: "esbuild"
+    name: "esbuild"
+    category: "build"
+    description: "An extremely fast JavaScript and CSS bundler and minifier"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["bundler", "minifier", "fast", "go"]
+    version: "0.24.0"
+    homepage: "https://esbuild.github.io"
+
+  # ── State Management ────────────────────────────────────────────────
+  - id: "redux"
+    name: "Redux"
+    category: "state"
+    description: "A predictable state container for JavaScript apps"
+    language: "typescript"
+    requires: ["react"]
+    conflicts: ["vuex", "pinia"]
+    tags: ["state", "flux", "predictable"]
+    version: "5.0.0"
+    homepage: "https://redux.js.org"
+
+  - id: "zustand"
+    name: "Zustand"
+    category: "state"
+    description: "A small, fast, scalable state management solution for React"
+    language: "typescript"
+    requires: ["react"]
+    conflicts: ["vuex", "pinia"]
+    tags: ["state", "hooks", "minimal"]
+    version: "5.0.0"
+    homepage: "https://zustand.docs.pmnd.rs"
+
+  - id: "jotai"
+    name: "Jotai"
+    category: "state"
+    description: "Primitive and flexible state management for React"
+    language: "typescript"
+    requires: ["react"]
+    conflicts: ["vuex", "pinia"]
+    tags: ["state", "atomic", "minimal"]
+    version: "2.11.0"
+    homepage: "https://jotai.org"
+
+  - id: "recoil"
+    name: "Recoil"
+    category: "state"
+    description: "An experimental state management library for React"
+    language: "typescript"
+    requires: ["react"]
+    conflicts: ["vuex", "pinia"]
+    tags: ["state", "atomic", "graph"]
+    version: "0.7.7"
+    homepage: "https://recoiljs.org"
+
+  - id: "pinia"
+    name: "Pinia"
+    category: "state"
+    description: "The intuitive store for Vue.js"
+    language: "typescript"
+    requires: ["vue"]
+    conflicts: ["redux", "zustand", "jotai", "recoil", "vuex"]
+    tags: ["state", "vue", "composition-api"]
+    version: "2.3.0"
+    homepage: "https://pinia.vuejs.org"
+
+  - id: "vuex"
+    name: "Vuex"
+    category: "state"
+    description: "Centralized state management for Vue.js"
+    language: "typescript"
+    requires: ["vue"]
+    conflicts: ["redux", "zustand", "jotai", "recoil", "pinia"]
+    tags: ["state", "vue", "centralized"]
+    version: "4.1.0"
+    homepage: "https://vuex.vuejs.org"

@@ -1,0 +1,93 @@
+technologies:
+  # ── Observability ───────────────────────────────────────────────────
+  - id: "datadog"
+    name: "Datadog"
+    category: "observability"
+    description: "Cloud monitoring and security platform for infrastructure and applications"
+    requires: []
+    conflicts: []
+    tags: ["apm", "metrics", "dashboards", "saas"]
+    version: "2024.1"
+    homepage: "https://www.datadoghq.com"
+
+  - id: "new-relic"
+    name: "New Relic"
+    category: "observability"
+    description: "Full-stack observability platform for monitoring and debugging"
+    requires: []
+    conflicts: []
+    tags: ["apm", "metrics", "traces", "saas"]
+    version: "2024.1"
+    homepage: "https://newrelic.com"
+
+  - id: "grafana"
+    name: "Grafana"
+    category: "observability"
+    description: "Open source analytics and monitoring solution for every database"
+    requires: []
+    conflicts: []
+    tags: ["dashboards", "visualization", "open-source"]
+    version: "11.4.0"
+    homepage: "https://grafana.com"
+
+  - id: "prometheus"
+    name: "Prometheus"
+    category: "observability"
+    description: "An open source monitoring system with a dimensional data model"
+    requires: []
+    conflicts: []
+    tags: ["metrics", "alerting", "time-series", "open-source"]
+    version: "3.1.0"
+    homepage: "https://prometheus.io"
+
+  # ── Logging ─────────────────────────────────────────────────────────
+  - id: "elk-stack"
+    name: "ELK Stack"
+    category: "logging"
+    description: "Elasticsearch, Logstash, and Kibana for log aggregation and analysis"
+    requires: []
+    conflicts: []
+    tags: ["logs", "search", "visualization", "pipeline"]
+    version: "8.17.0"
+    homepage: "https://www.elastic.co/elastic-stack"
+
+  - id: "loki"
+    name: "Loki"
+    category: "logging"
+    description: "A horizontally scalable, multi-tenant log aggregation system by Grafana"
+    requires: []
+    conflicts: []
+    tags: ["logs", "scalable", "grafana", "labels"]
+    version: "3.3.0"
+    homepage: "https://grafana.com/oss/loki"
+
+  - id: "cloudwatch"
+    name: "CloudWatch"
+    category: "logging"
+    description: "AWS monitoring and observability service for logs, metrics, and alarms"
+    requires: ["aws"]
+    conflicts: []
+    tags: ["logs", "metrics", "alarms", "aws"]
+    version: "2024.1"
+    homepage: "https://aws.amazon.com/cloudwatch"
+
+  # ── Error Tracking ─────────────────────────────────────────────────
+  - id: "sentry"
+    name: "Sentry"
+    category: "error-tracking"
+    description: "Application monitoring platform for error tracking and performance"
+    requires: []
+    conflicts: []
+    tags: ["errors", "performance", "replay", "traces"]
+    version: "8.47.0"
+    homepage: "https://sentry.io"
+
+  - id: "rollbar"
+    name: "Rollbar"
+    category: "error-tracking"
+    description: "Real-time error monitoring and debugging for development teams"
+    requires: []
+    conflicts: []
+    tags: ["errors", "realtime", "debugging", "automation"]
+    version: "2024.1"
+    homepage: "https://rollbar.com"

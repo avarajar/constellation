@@ -1,0 +1,204 @@
+technologies:
+  # ── Node.js ─────────────────────────────────────────────────────────
+  - id: "express"
+    name: "Express"
+    category: "backend"
+    description: "Fast, unopinionated, minimalist web framework for Node.js"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["node", "http", "middleware", "rest"]
+    version: "5.0.0"
+    homepage: "https://expressjs.com"
+
+  - id: "fastify"
+    name: "Fastify"
+    category: "backend"
+    description: "Fast and low overhead web framework for Node.js"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["node", "http", "performance", "schema"]
+    version: "5.2.0"
+    homepage: "https://fastify.dev"
+
+  - id: "nestjs"
+    name: "Nest.js"
+    category: "backend"
+    description: "A progressive Node.js framework for building server-side applications"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["node", "enterprise", "decorator", "di"]
+    version: "11.0.0"
+    homepage: "https://nestjs.com"
+
+  - id: "hono"
+    name: "Hono"
+    category: "backend"
+    description: "Ultrafast web framework for the Edge, works on any runtime"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["node", "edge", "lightweight", "multi-runtime"]
+    version: "4.7.0"
+    homepage: "https://hono.dev"
+
+  - id: "elysia"
+    name: "Elysia"
+    category: "backend"
+    description: "Ergonomic web framework for building backend servers with Bun"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["bun", "http", "typesafe", "performance"]
+    version: "1.2.0"
+    homepage: "https://elysiajs.com"
+
+  # ── Python ──────────────────────────────────────────────────────────
+  - id: "fastapi"
+    name: "FastAPI"
+    category: "backend"
+    description: "Modern, fast web framework for building APIs with Python"
+    language: "python"
+    requires: []
+    conflicts: []
+    tags: ["python", "async", "openapi", "pydantic"]
+    version: "0.115.0"
+    homepage: "https://fastapi.tiangolo.com"
+
+  - id: "django"
+    name: "Django"
+    category: "backend"
+    description: "The web framework for perfectionists with deadlines"
+    language: "python"
+    requires: []
+    conflicts: []
+    tags: ["python", "batteries-included", "orm", "admin"]
+    version: "5.1.0"
+    homepage: "https://www.djangoproject.com"
+
+  - id: "flask"
+    name: "Flask"
+    category: "backend"
+    description: "A lightweight WSGI web application framework for Python"
+    language: "python"
+    requires: []
+    conflicts: []
+    tags: ["python", "micro", "wsgi", "flexible"]
+    version: "3.1.0"
+    homepage: "https://flask.palletsprojects.com"
+
+  - id: "starlette"
+    name: "Starlette"
+    category: "backend"
+    description: "A lightweight ASGI framework for high-performance async services"
+    language: "python"
+    requires: []
+    conflicts: []
+    tags: ["python", "async", "asgi", "lightweight"]
+    version: "0.41.0"
+    homepage: "https://www.starlette.io"
+
+  # ── Go ──────────────────────────────────────────────────────────────
+  - id: "gin"
+    name: "Gin"
+    category: "backend"
+    description: "A high-performance HTTP web framework written in Go"
+    language: "go"
+    requires: []
+    conflicts: []
+    tags: ["go", "http", "performance", "middleware"]
+    version: "1.10.0"
+    homepage: "https://gin-gonic.com"
+
+  - id: "echo"
+    name: "Echo"
+    category: "backend"
+    description: "High performance, extensible, minimalist Go web framework"
+    language: "go"
+    requires: []
+    conflicts: []
+    tags: ["go", "http", "extensible", "middleware"]
+    version: "4.13.0"
+    homepage: "https://echo.labstack.com"
+
+  - id: "chi"
+    name: "Chi"
+    category: "backend"
+    description: "Lightweight, idiomatic, composable router for Go HTTP services"
+    language: "go"
+    requires: []
+    conflicts: []
+    tags: ["go", "router", "composable", "stdlib"]
+    version: "5.2.0"
+    homepage: "https://go-chi.io"
+
+  # ── Rust ────────────────────────────────────────────────────────────
+  - id: "actix"
+    name: "Actix Web"
+    category: "backend"
+    description: "A powerful, pragmatic, and extremely fast web framework for Rust"
+    language: "rust"
+    requires: []
+    conflicts: []
+    tags: ["rust", "http", "actor", "performance"]
+    version: "4.9.0"
+    homepage: "https://actix.rs"
+
+  - id: "axum"
+    name: "Axum"
+    category: "backend"
+    description: "Ergonomic and modular web framework built with Tokio, Tower, and Hyper"
+    language: "rust"
+    requires: []
+    conflicts: []
+    tags: ["rust", "http", "tower", "tokio"]
+    version: "0.8.0"
+    homepage: "https://github.com/tokio-rs/axum"
+
+  - id: "rocket"
+    name: "Rocket"
+    category: "backend"
+    description: "A web framework for Rust that makes it simple to write fast web applications"
+    language: "rust"
+    requires: []
+    conflicts: []
+    tags: ["rust", "http", "macro", "ergonomic"]
+    version: "0.5.1"
+    homepage: "https://rocket.rs"
+
+  # ── Java ────────────────────────────────────────────────────────────
+  - id: "spring-boot"
+    name: "Spring Boot"
+    category: "backend"
+    description: "Java-based framework for creating production-grade Spring applications"
+    language: "java"
+    requires: []
+    conflicts: []
+    tags: ["java", "enterprise", "spring", "di"]
+    version: "3.4.0"
+    homepage: "https://spring.io/projects/spring-boot"
+
+  - id: "quarkus"
+    name: "Quarkus"
+    category: "backend"
+    description: "A Kubernetes-native Java framework tailored for GraalVM and HotSpot"
+    language: "java"
+    requires: []
+    conflicts: []
+    tags: ["java", "cloud-native", "graalvm", "reactive"]
+    version: "3.17.0"
+    homepage: "https://quarkus.io"
+
+  # ── .NET ────────────────────────────────────────────────────────────
+  - id: "aspnet-core"
+    name: "ASP.NET Core"
+    category: "backend"
+    description: "A cross-platform, high-performance framework for building modern cloud-based apps"
+    language: "csharp"
+    requires: []
+    conflicts: []
+    tags: ["dotnet", "csharp", "enterprise", "cross-platform"]
+    version: "9.0.0"
+    homepage: "https://dotnet.microsoft.com/apps/aspnet"

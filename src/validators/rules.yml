@@ -1,0 +1,206 @@
+rules:
+  # ── Frontend Framework Conflicts ────────────────────────────────────
+  - id: "no-react-vue"
+    type: "conflict"
+    techs: ["react", "vue"]
+    message: "React and Vue are both UI frameworks — pick one"
+
+  - id: "no-react-angular"
+    type: "conflict"
+    techs: ["react", "angular"]
+    message: "React and Angular are both UI frameworks — pick one"
+
+  - id: "no-react-svelte"
+    type: "conflict"
+    techs: ["react", "svelte"]
+    message: "React and Svelte are both UI frameworks — pick one"
+
+  - id: "no-react-solid"
+    type: "conflict"
+    techs: ["react", "solid"]
+    message: "React and Solid are both UI frameworks — pick one"
+
+  - id: "no-react-qwik"
+    type: "conflict"
+    techs: ["react", "qwik"]
+    message: "React and Qwik are both UI frameworks — pick one"
+
+  - id: "no-vue-angular"
+    type: "conflict"
+    techs: ["vue", "angular"]
+    message: "Vue and Angular are both UI frameworks — pick one"
+
+  - id: "no-vue-svelte"
+    type: "conflict"
+    techs: ["vue", "svelte"]
+    message: "Vue and Svelte are both UI frameworks — pick one"
+
+  - id: "no-vue-solid"
+    type: "conflict"
+    techs: ["vue", "solid"]
+    message: "Vue and Solid are both UI frameworks — pick one"
+
+  - id: "no-vue-qwik"
+    type: "conflict"
+    techs: ["vue", "qwik"]
+    message: "Vue and Qwik are both UI frameworks — pick one"
+
+  - id: "no-angular-svelte"
+    type: "conflict"
+    techs: ["angular", "svelte"]
+    message: "Angular and Svelte are both UI frameworks — pick one"
+
+  - id: "no-angular-solid"
+    type: "conflict"
+    techs: ["angular", "solid"]
+    message: "Angular and Solid are both UI frameworks — pick one"
+
+  - id: "no-angular-qwik"
+    type: "conflict"
+    techs: ["angular", "qwik"]
+    message: "Angular and Qwik are both UI frameworks — pick one"
+
+  - id: "no-svelte-solid"
+    type: "conflict"
+    techs: ["svelte", "solid"]
+    message: "Svelte and Solid are both UI frameworks — pick one"
+
+  - id: "no-svelte-qwik"
+    type: "conflict"
+    techs: ["svelte", "qwik"]
+    message: "Svelte and Qwik are both UI frameworks — pick one"
+
+  - id: "no-solid-qwik"
+    type: "conflict"
+    techs: ["solid", "qwik"]
+    message: "Solid and Qwik are both UI frameworks — pick one"
+
+  # ── Meta-framework Requirements ─────────────────────────────────────
+  - id: "nextjs-requires-react"
+    type: "requires"
+    techs: ["nextjs", "react"]
+    message: "Next.js requires React — add React to your selection"
+
+  - id: "nuxt-requires-vue"
+    type: "requires"
+    techs: ["nuxt", "vue"]
+    message: "Nuxt requires Vue — add Vue to your selection"
+
+  # ── State Management Requirements ───────────────────────────────────
+  - id: "pinia-requires-vue"
+    type: "requires"
+    techs: ["pinia", "vue"]
+    message: "Pinia requires Vue — add Vue to your selection"
+
+  - id: "vuex-requires-vue"
+    type: "requires"
+    techs: ["vuex", "vue"]
+    message: "Vuex requires Vue — add Vue to your selection"
+
+  - id: "redux-requires-react"
+    type: "requires"
+    techs: ["redux", "react"]
+    message: "Redux requires React — add React to your selection"
+
+  - id: "zustand-requires-react"
+    type: "requires"
+    techs: ["zustand", "react"]
+    message: "Zustand requires React — add React to your selection"
+
+  - id: "jotai-requires-react"
+    type: "requires"
+    techs: ["jotai", "react"]
+    message: "Jotai requires React — add React to your selection"
+
+  - id: "recoil-requires-react"
+    type: "requires"
+    techs: ["recoil", "react"]
+    message: "Recoil requires React — add React to your selection"
+
+  # ── Build Tool Requirements ─────────────────────────────────────────
+  - id: "turbopack-requires-nextjs"
+    type: "requires"
+    techs: ["turbopack", "nextjs"]
+    message: "Turbopack requires Next.js — add Next.js to your selection"
+
+  # ── ORM Requirements ────────────────────────────────────────────────
+  - id: "prisma-requires-node-backend"
+    type: "requires"
+    techs: ["prisma", "express|fastify|nestjs|hono|elysia|nextjs"]
+    message: "Prisma requires a Node.js backend — add a Node.js framework"
+
+  - id: "typeorm-requires-node-backend"
+    type: "requires"
+    techs: ["typeorm", "express|fastify|nestjs|hono|elysia|nextjs"]
+    message: "TypeORM requires a Node.js backend — add a Node.js framework"
+
+  - id: "sequelize-requires-node-backend"
+    type: "requires"
+    techs: ["sequelize", "express|fastify|nestjs|hono|elysia|nextjs"]
+    message: "Sequelize requires a Node.js backend — add a Node.js framework"
+
+  - id: "sqlalchemy-requires-python-backend"
+    type: "requires"
+    techs: ["sqlalchemy", "fastapi|django|flask|starlette"]
+    message: "SQLAlchemy requires a Python backend — add a Python framework"
+
+  - id: "entity-framework-requires-dotnet"
+    type: "requires"
+    techs: ["entity-framework", "aspnet-core"]
+    message: "Entity Framework requires ASP.NET Core — add ASP.NET Core"
+
+  # ── Build Tool Conflicts ────────────────────────────────────────────
+  - id: "no-vite-webpack"
+    type: "conflict"
+    techs: ["vite", "webpack"]
+    message: "Vite and Webpack are both bundlers — pick one"
+
+  - id: "no-turbopack-vite"
+    type: "conflict"
+    techs: ["turbopack", "vite"]
+    message: "Turbopack and Vite are both bundlers — pick one"
+
+  - id: "no-turbopack-webpack"
+    type: "conflict"
+    techs: ["turbopack", "webpack"]
+    message: "Turbopack and Webpack are both bundlers — pick one"
+
+  # ── Container Conflicts ─────────────────────────────────────────────
+  - id: "no-docker-podman"
+    type: "conflict"
+    techs: ["docker", "podman"]
+    message: "Docker and Podman are both container runtimes — pick one"
+
+  # ── Database Conflicts ──────────────────────────────────────────────
+  - id: "no-mysql-mariadb"
+    type: "conflict"
+    techs: ["mysql", "mariadb"]
+    message: "MySQL and MariaDB are interchangeable — pick one"
+
+  # ── Unit Test Conflicts ─────────────────────────────────────────────
+  - id: "no-jest-vitest"
+    type: "conflict"
+    techs: ["jest", "vitest"]
+    message: "Jest and Vitest are both JS unit test runners — pick one"
+
+  # ── State Management Conflicts ──────────────────────────────────────
+  - id: "no-pinia-vuex"
+    type: "conflict"
+    techs: ["pinia", "vuex"]
+    message: "Pinia and Vuex are both Vue state managers — pick one (Pinia is recommended)"
+
+  # ── Warnings ────────────────────────────────────────────────────────
+  - id: "k8s-overkill"
+    type: "warns"
+    techs: ["kubernetes"]
+    message: "Kubernetes adds significant complexity — consider Docker Compose for smaller projects"
+
+  - id: "vitest-prefers-vite"
+    type: "warns"
+    techs: ["vitest"]
+    message: "Vitest works best with Vite as the build tool — consider adding Vite"
+
+  - id: "styled-components-requires-react"
+    type: "requires"
+    techs: ["styled-components", "react"]
+    message: "Styled Components is designed for React — add React to your selection"

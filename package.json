@@ -1,0 +1,51 @@
+{
+  "name": "constellation",
+  "version": "0.1.0",
+  "description": "Project generator that lets you pick a tech stack and generates a fully functional project from scratch",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "constellation": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/ --ext .ts",
+    "format": "prettier --write 'src/**/*.ts'",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "keywords": ["generator", "scaffold", "project", "cli", "stack"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.3.2",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "handlebars": "^4.7.8",
+    "js-yaml": "^4.1.0",
+    "ora": "^8.2.0",
+    "glob": "^11.0.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.13.5",
+    "eslint": "^9.21.0",
+    "@eslint/js": "^9.21.0",
+    "typescript-eslint": "^8.25.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3"
+  },
+  "lint-staged": {
+    "*.ts": ["eslint --fix", "prettier --write"]
+  }
+}

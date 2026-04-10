@@ -1,0 +1,154 @@
+technologies:
+  # ── Containerization ────────────────────────────────────────────────
+  - id: "docker"
+    name: "Docker"
+    category: "containerization"
+    description: "The most widely used platform for building and running containers"
+    requires: []
+    conflicts: ["podman"]
+    tags: ["container", "image", "devops"]
+    version: "27.0.0"
+    homepage: "https://www.docker.com"
+
+  - id: "podman"
+    name: "Podman"
+    category: "containerization"
+    description: "A daemonless container engine for OCI containers"
+    requires: []
+    conflicts: ["docker"]
+    tags: ["container", "rootless", "daemonless"]
+    version: "5.3.0"
+    homepage: "https://podman.io"
+
+  # ── Orchestration ───────────────────────────────────────────────────
+  - id: "kubernetes"
+    name: "Kubernetes"
+    category: "orchestration"
+    description: "Production-grade container orchestration for automating deployment and scaling"
+    requires: ["docker"]
+    conflicts: []
+    tags: ["orchestration", "scaling", "cloud-native"]
+    version: "1.32.0"
+    homepage: "https://kubernetes.io"
+
+  - id: "docker-compose"
+    name: "Docker Compose"
+    category: "orchestration"
+    description: "A tool for defining and running multi-container Docker applications"
+    requires: ["docker"]
+    conflicts: []
+    tags: ["orchestration", "multi-container", "local-dev"]
+    version: "2.32.0"
+    homepage: "https://docs.docker.com/compose"
+
+  # ── Cloud Platforms ─────────────────────────────────────────────────
+  - id: "aws"
+    name: "AWS"
+    category: "cloud"
+    description: "Amazon Web Services — the broadest and deepest cloud platform"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "iaas", "paas", "serverless"]
+    version: "2024.1"
+    homepage: "https://aws.amazon.com"
+
+  - id: "gcp"
+    name: "GCP"
+    category: "cloud"
+    description: "Google Cloud Platform for computing, storage, and machine learning"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "iaas", "paas", "ml"]
+    version: "2024.1"
+    homepage: "https://cloud.google.com"
+
+  - id: "azure"
+    name: "Azure"
+    category: "cloud"
+    description: "Microsoft's cloud computing platform for building and managing applications"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "iaas", "paas", "enterprise"]
+    version: "2024.1"
+    homepage: "https://azure.microsoft.com"
+
+  - id: "vercel"
+    name: "Vercel"
+    category: "cloud"
+    description: "The platform for frontend developers to deploy and scale web apps"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "paas", "frontend", "serverless", "edge"]
+    version: "2024.1"
+    homepage: "https://vercel.com"
+
+  - id: "netlify"
+    name: "Netlify"
+    category: "cloud"
+    description: "A platform for deploying and hosting modern web projects"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "paas", "jamstack", "serverless"]
+    version: "2024.1"
+    homepage: "https://www.netlify.com"
+
+  - id: "render"
+    name: "Render"
+    category: "cloud"
+    description: "A unified cloud to build and run all your apps"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "paas", "managed", "auto-deploy"]
+    version: "2024.1"
+    homepage: "https://render.com"
+
+  - id: "railway"
+    name: "Railway"
+    category: "cloud"
+    description: "Deploy infrastructure, instantly. An infrastructure platform for developers"
+    requires: []
+    conflicts: []
+    tags: ["cloud", "paas", "instant", "developer-experience"]
+    version: "2024.1"
+    homepage: "https://railway.app"
+
+  # ── CI/CD ───────────────────────────────────────────────────────────
+  - id: "github-actions"
+    name: "GitHub Actions"
+    category: "cicd"
+    description: "Automate workflows directly from your GitHub repository"
+    requires: []
+    conflicts: []
+    tags: ["ci", "cd", "automation", "github"]
+    version: "2024.1"
+    homepage: "https://github.com/features/actions"
+
+  - id: "gitlab-ci"
+    name: "GitLab CI"
+    category: "cicd"
+    description: "GitLab's built-in continuous integration and delivery tool"
+    requires: []
+    conflicts: []
+    tags: ["ci", "cd", "automation", "gitlab"]
+    version: "2024.1"
+    homepage: "https://docs.gitlab.com/ee/ci"
+
+  - id: "circleci"
+    name: "CircleCI"
+    category: "cicd"
+    description: "Continuous integration and delivery platform for modern software teams"
+    requires: []
+    conflicts: []
+    tags: ["ci", "cd", "automation", "pipelines"]
+    version: "2024.1"
+    homepage: "https://circleci.com"
+
+  - id: "jenkins"
+    name: "Jenkins"
+    category: "cicd"
+    description: "The leading open source automation server for CI/CD"
+    requires: []
+    conflicts: []
+    tags: ["ci", "cd", "automation", "self-hosted"]
+    version: "2.479.0"
+    homepage: "https://www.jenkins.io"

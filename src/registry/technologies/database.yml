@@ -1,0 +1,139 @@
+technologies:
+  # ── SQL ─────────────────────────────────────────────────────────────
+  - id: "postgresql"
+    name: "PostgreSQL"
+    category: "database"
+    description: "The world's most advanced open source relational database"
+    requires: []
+    conflicts: []
+    tags: ["sql", "relational", "acid", "extensible"]
+    version: "17.0"
+    homepage: "https://www.postgresql.org"
+
+  - id: "mysql"
+    name: "MySQL"
+    category: "database"
+    description: "The world's most popular open source relational database"
+    requires: []
+    conflicts: ["mariadb"]
+    tags: ["sql", "relational", "acid"]
+    version: "9.1.0"
+    homepage: "https://www.mysql.com"
+
+  - id: "mariadb"
+    name: "MariaDB"
+    category: "database"
+    description: "A community-developed fork of MySQL with enhanced features"
+    requires: []
+    conflicts: ["mysql"]
+    tags: ["sql", "relational", "acid", "mysql-compatible"]
+    version: "11.6.0"
+    homepage: "https://mariadb.org"
+
+  # ── NoSQL ───────────────────────────────────────────────────────────
+  - id: "mongodb"
+    name: "MongoDB"
+    category: "database"
+    description: "A document-oriented NoSQL database for modern applications"
+    requires: []
+    conflicts: []
+    tags: ["nosql", "document", "flexible-schema"]
+    version: "8.0.0"
+    homepage: "https://www.mongodb.com"
+
+  - id: "dynamodb"
+    name: "DynamoDB"
+    category: "database"
+    description: "A fully managed NoSQL database service by AWS"
+    requires: ["aws"]
+    conflicts: []
+    tags: ["nosql", "key-value", "serverless", "aws"]
+    version: "2024.1"
+    homepage: "https://aws.amazon.com/dynamodb"
+
+  - id: "firestore"
+    name: "Firestore"
+    category: "database"
+    description: "A flexible, scalable NoSQL cloud database by Google"
+    requires: ["gcp"]
+    conflicts: []
+    tags: ["nosql", "document", "realtime", "gcp"]
+    version: "2024.1"
+    homepage: "https://firebase.google.com/docs/firestore"
+
+  # ── Cache ───────────────────────────────────────────────────────────
+  - id: "redis"
+    name: "Redis"
+    category: "cache"
+    description: "An in-memory data store used as cache, message broker, and database"
+    requires: []
+    conflicts: []
+    tags: ["cache", "in-memory", "pub-sub", "fast"]
+    version: "7.4.0"
+    homepage: "https://redis.io"
+
+  - id: "memcached"
+    name: "Memcached"
+    category: "cache"
+    description: "A high-performance distributed memory caching system"
+    requires: []
+    conflicts: []
+    tags: ["cache", "in-memory", "distributed", "simple"]
+    version: "1.6.32"
+    homepage: "https://memcached.org"
+
+  # ── ORM / Query Builders ───────────────────────────────────────────
+  - id: "prisma"
+    name: "Prisma"
+    category: "orm"
+    description: "Next-generation Node.js and TypeScript ORM with type-safe queries"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["orm", "typesafe", "migration", "node"]
+    version: "6.2.0"
+    homepage: "https://www.prisma.io"
+
+  - id: "typeorm"
+    name: "TypeORM"
+    category: "orm"
+    description: "An ORM for TypeScript and JavaScript with decorator-based entities"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["orm", "decorator", "migration", "node"]
+    version: "0.3.20"
+    homepage: "https://typeorm.io"
+
+  - id: "sequelize"
+    name: "Sequelize"
+    category: "orm"
+    description: "A promise-based Node.js ORM for SQL databases"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["orm", "promise", "migration", "node"]
+    version: "6.37.0"
+    homepage: "https://sequelize.org"
+
+  - id: "sqlalchemy"
+    name: "SQLAlchemy"
+    category: "orm"
+    description: "The Python SQL toolkit and Object Relational Mapper"
+    language: "python"
+    requires: []
+    conflicts: []
+    tags: ["orm", "python", "migration", "toolkit"]
+    version: "2.0.36"
+    homepage: "https://www.sqlalchemy.org"
+
+  - id: "entity-framework"
+    name: "Entity Framework"
+    category: "orm"
+    description: "The modern object-relational mapper for .NET"
+    language: "csharp"
+    requires: ["aspnet-core"]
+    conflicts: []
+    tags: ["orm", "dotnet", "migration", "linq"]
+    version: "9.0.0"
+    homepage: "https://learn.microsoft.com/ef"

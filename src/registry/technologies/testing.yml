@@ -1,0 +1,99 @@
+technologies:
+  # ── Unit Testing ────────────────────────────────────────────────────
+  - id: "jest"
+    name: "Jest"
+    category: "testing-unit"
+    description: "A delightful JavaScript testing framework with a focus on simplicity"
+    language: "typescript"
+    requires: []
+    conflicts: ["vitest"]
+    tags: ["unit", "snapshot", "mocking", "node"]
+    version: "30.0.0"
+    homepage: "https://jestjs.io"
+
+  - id: "vitest"
+    name: "Vitest"
+    category: "testing-unit"
+    description: "A blazing fast unit test framework powered by Vite"
+    language: "typescript"
+    requires: []
+    conflicts: ["jest"]
+    tags: ["unit", "vite", "fast", "node"]
+    version: "3.0.0"
+    homepage: "https://vitest.dev"
+
+  - id: "pytest"
+    name: "Pytest"
+    category: "testing-unit"
+    description: "A mature full-featured Python testing framework"
+    language: "python"
+    requires: []
+    conflicts: []
+    tags: ["unit", "python", "fixtures", "plugins"]
+    version: "8.3.0"
+    homepage: "https://docs.pytest.org"
+
+  - id: "xunit"
+    name: "xUnit"
+    category: "testing-unit"
+    description: "A free, open source, community-focused unit testing tool for .NET"
+    language: "csharp"
+    requires: ["aspnet-core"]
+    conflicts: []
+    tags: ["unit", "dotnet", "csharp"]
+    version: "2.9.0"
+    homepage: "https://xunit.net"
+
+  # ── E2E Testing ─────────────────────────────────────────────────────
+  - id: "cypress"
+    name: "Cypress"
+    category: "testing-e2e"
+    description: "Fast, easy, and reliable end-to-end testing for anything that runs in a browser"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["e2e", "browser", "component", "visual"]
+    version: "13.17.0"
+    homepage: "https://www.cypress.io"
+
+  - id: "playwright"
+    name: "Playwright"
+    category: "testing-e2e"
+    description: "Reliable end-to-end testing for modern web apps across all browsers"
+    language: "typescript"
+    requires: []
+    conflicts: []
+    tags: ["e2e", "browser", "cross-browser", "auto-wait"]
+    version: "1.49.0"
+    homepage: "https://playwright.dev"
+
+  - id: "selenium"
+    name: "Selenium"
+    category: "testing-e2e"
+    description: "A suite of tools for automating web browsers across many platforms"
+    requires: []
+    conflicts: []
+    tags: ["e2e", "browser", "cross-platform", "webdriver"]
+    version: "4.27.0"
+    homepage: "https://www.selenium.dev"
+
+  # ── API Testing ─────────────────────────────────────────────────────
+  - id: "postman"
+    name: "Postman Collections"
+    category: "testing-api"
+    description: "Pre-configured API testing collections for Postman"
+    requires: []
+    conflicts: []
+    tags: ["api", "collections", "automation", "newman"]
+    version: "2024.1"
+    homepage: "https://www.postman.com"
+
+  - id: "rest-client"
+    name: "REST Client"
+    category: "testing-api"
+    description: "VS Code extension and config files for sending HTTP requests"
+    requires: []
+    conflicts: []
+    tags: ["api", "http", "vscode", "lightweight"]
+    version: "2024.1"
+    homepage: "https://marketplace.visualstudio.com/items?itemName=humao.rest-client"
