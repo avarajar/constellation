@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constellation - Build your perfect stack</title>
+  <meta name="description" content="Constellation project generator — visually assemble your ideal tech stack and scaffold a production-ready project in seconds.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Toast container -->
+  <div id="toasts" class="toast-container"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <h1 class="logo-text">Constellation</h1>
+      </div>
+      <p class="tagline">Build your perfect stack</p>
+    </div>
+    <div class="header-glow"></div>
+  </header>
+
+  <!-- Progress bar -->
+  <nav class="stepper" role="navigation" aria-label="Wizard steps">
+    <ol class="stepper-track">
+      <li class="stepper-step active" data-step="1">
+        <span class="stepper-num">1</span>
+        <span class="stepper-label">Project Setup</span>
+      </li>
+      <li class="stepper-step" data-step="2">
+        <span class="stepper-num">2</span>
+        <span class="stepper-label">Technologies</span>
+      </li>
+      <li class="stepper-step" data-step="3">
+        <span class="stepper-num">3</span>
+        <span class="stepper-label">Review &amp; Generate</span>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Main content area -->
+  <main id="app" class="main"></main>
+
+  <!-- Templates (hidden, cloned by JS) -->
+
+  <!-- Step 1: Project Setup -->
+  <template id="tpl-step1">
+    <section class="step step-setup fade-in" aria-label="Project Setup">
+      <h2 class="step-title">Project Setup</h2>
+      <p class="step-desc">Configure the basics before choosing your stack.</p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="projectName">Project Name <span class="required">*</span></label>
+          <input type="text" id="projectName" placeholder="my-awesome-app" autocomplete="off" spellcheck="false">
+          <span class="field-hint">Lowercase, hyphens allowed. Used as directory name.</span>
+        </div>
+
+        <div class="field">
+          <label for="projectDesc">Description</label>
+          <textarea id="projectDesc" rows="2" placeholder="A brief description of your project (optional)"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="outputDir">Output Directory</label>
+          <input type="text" id="outputDir" placeholder="./my-awesome-app">
+          <span class="field-hint">Where the project will be generated.</span>
+        </div>
+
+        <div class="field">
+          <label>Project Mode</label>
+          <div class="toggle-group" role="radiogroup" aria-label="Project mode">
+            <button class="toggle-btn active" data-mode="new" role="radio" aria-checked="true">New Project</button>
+            <button class="toggle-btn" data-mode="integrate" role="radio" aria-checked="false">Integrate into Existing</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Monorepo</label>
+          <div class="toggle-group" role="radiogroup" aria-label="Monorepo toggle">
+            <button class="toggle-btn" data-monorepo="false" role="radio" aria-checked="true">No</button>
+            <button class="toggle-btn" data-monorepo="true" role="radio" aria-checked="false">Yes</button>
+          </div>
+        </div>
+
+        <div class="field monorepo-tool-field hidden">
+          <label for="monorepoTool">Monorepo Tool</label>
+          <div class="toggle-group" role="radiogroup" aria-label="Monorepo tool">
+            <button class="toggle-btn" data-monorepo-tool="turborepo" role="radio" aria-checked="false">Turborepo</button>
+            <button class="toggle-btn" data-monorepo-tool="nx" role="radio" aria-checked="false">Nx</button>
+            <button class="toggle-btn" data-monorepo-tool="none" role="radio" aria-checked="false">None</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <span></span>
+        <button class="btn btn-primary btn-next" data-dir="next" disabled>
+          Next <span class="btn-arrow">&rarr;</span>
+        </button>
+      </div>
+    </section>
+  </template>
+
+  <!-- Step 2: Technology Selection -->
+  <template id="tpl-step2">
+    <section class="step step-tech fade-in" aria-label="Technology Selection">
+      <h2 class="step-title">Choose Your Technologies</h2>
+
+      <div class="tech-search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="techSearch" placeholder="Search technologies..." autocomplete="off" spellcheck="false">
+        <span class="search-count" id="searchCount"></span>
+      </div>
+
+      <div class="tech-layout">
+        <!-- Category group tabs (left sidebar) -->
+        <nav class="group-sidebar" role="tablist" aria-label="Category groups">
+          <!-- filled by JS -->
+        </nav>
+
+        <!-- Tech cards grid -->
+        <div class="tech-panel" role="tabpanel">
+          <div id="techGrid" class="tech-grid-container">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-ghost btn-prev" data-dir="prev">
+          <span class="btn-arrow">&larr;</span> Back
+        </button>
+        <button class="btn btn-primary btn-next" data-dir="next">
+          Next <span class="btn-arrow">&rarr;</span>
+        </button>
+      </div>
+    </section>
+  </template>
+
+  <!-- Step 3: Review & Generate -->
+  <template id="tpl-step3">
+    <section class="step step-review fade-in" aria-label="Review and Generate">
+      <h2 class="step-title">Review &amp; Generate</h2>
+
+      <div class="review-layout">
+        <!-- Selection summary -->
+        <div class="review-summary" id="reviewSummary">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Validation -->
+        <div class="review-validation" id="reviewValidation"></div>
+
+        <!-- Project tree preview -->
+        <div class="review-tree-section">
+          <h3>Project Structure Preview</h3>
+          <pre class="project-tree" id="projectTree"></pre>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-ghost btn-prev" data-dir="prev">
+          <span class="btn-arrow">&larr;</span> Back
+        </button>
+        <button class="btn btn-primary btn-generate" id="btnGenerate">
+          <span class="btn-generate-text">Generate Project</span>
+          <span class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <!-- Success overlay (hidden until generation completes) -->
+      <div class="success-overlay hidden" id="successOverlay">
+        <div class="success-card">
+          <div class="success-icon">&#10024;</div>
+          <h3>Project Generated!</h3>
+          <div id="successDetails"></div>
+          <button class="btn btn-primary" id="btnNewProject">Start New Project</button>
+        </div>
+        <canvas id="confettiCanvas"></canvas>
+      </div>
+    </section>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

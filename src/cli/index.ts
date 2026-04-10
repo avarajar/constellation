@@ -93,6 +93,20 @@ export function registerListCommand(program: Command): void {
 /**
  * Register the "validate" command for checking a config file.
  */
+/**
+ * Register the "web" command for starting the web UI.
+ */
+export function registerWebCommand(program: Command): void {
+  program
+    .command('web')
+    .description('Start the web UI for interactive project generation')
+    .option('-p, --port <port>', 'Port number', '3210')
+    .action(async (opts: { port: string }) => {
+      const { startServer } = await import('../web/server.js');
+      startServer(parseInt(opts.port, 10));
+    });
+}
+
 export function registerValidateCommand(program: Command): void {
   program
     .command('validate <config>')
