@@ -201,7 +201,11 @@ export async function handleGenerate(body: unknown, res: ServerResponse): Promis
  * POST /api/blueprint — generate a blueprint YAML from a ProjectSelection.
  * Returns the YAML string and the absolute path where it was saved.
  */
-export async function handleCreateBlueprint(body: unknown, res: ServerResponse): Promise<void> {
+export async function handleCreateBlueprint(
+  body: unknown,
+  res: ServerResponse,
+  onSuccess?: (path: string) => void,
+): Promise<void> {
   try {
     if (!body || typeof body !== 'object') {
       errorResponse(res, 400, 'Request body must be a valid ProjectSelection object.');
@@ -262,6 +266,9 @@ export async function handleCreateBlueprint(body: unknown, res: ServerResponse):
       blueprint: blueprintYaml,
       path: blueprintPath,
     });
+
+    // Notify caller (used by --wait mode to unblock the CLI)
+    onSuccess?.(blueprintPath);
   } catch (err) {
     errorResponse(res, 500, err instanceof Error ? err.message : String(err));
   }

@@ -17,8 +17,15 @@
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
-  "keywords": ["generator", "scaffold", "project", "cli", "stack"],
+  "keywords": ["generator", "scaffold", "project", "cli", "stack", "claude-code", "constellation"],
   "license": "MIT",
+  "files": [
+    "dist",
+    "commands",
+    "src/registry/technologies",
+    "src/web/public",
+    "src/validators/rules.yml"
+  ],
   "engines": {
     "node": ">=20.0.0"
   },

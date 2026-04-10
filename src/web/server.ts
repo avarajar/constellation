@@ -1,7 +1,7 @@
 /**
  * HTTP server for the Constellation web UI.
  */
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { createServer, type IncomingMessage, type ServerResponse, type Server } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -68,9 +68,16 @@ async function serveStatic(res: ServerResponse, filePath: string): Promise<void>
   }
 }
 
+// ─── Server Options ──────────────────────────────────────────────
+
+export interface ServerOptions {
+  /** Called when a blueprint is successfully saved via POST /api/blueprint. */
+  onBlueprintSaved?: (blueprintPath: string) => void;
+}
+
 // ─── Server ───────────────────────────────────────────────────────
 
-export function startServer(port: number): void {
+export function startServer(port: number, options?: ServerOptions): Server {
   const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? '/', `http://localhost:${port}`);
     const pathname = url.pathname;
@@ -141,7 +148,7 @@ export function startServer(port: number): void {
 
       if (pathname === '/api/blueprint' && method === 'POST') {
         const body = await parseBody(req);
-        await handleCreateBlueprint(body, res);
+        await handleCreateBlueprint(body, res, options?.onBlueprintSaved);
         return;
       }
 
@@ -172,5 +179,35 @@ export function startServer(port: number): void {
     console.log();
     console.log(chalk.dim('  Press Ctrl+C to stop.'));
     console.log();
+  });
+
+  return server;
+}
+
+// ─── Wait Mode ────────────────────────────────────────────────────
+
+/**
+ * Start the web server and block until a blueprint is saved.
+ * Returns the absolute path to the saved blueprint file.
+ * The server shuts down automatically after the blueprint is saved.
+ */
+export function startServerAndWait(port: number): Promise<string> {
+  return new Promise((resolve) => {
+    const server = startServer(port, {
+      onBlueprintSaved: (blueprintPath) => {
+        // Print the path to stdout for CLI consumers
+        console.log();
+        console.log(chalk.green('  ✔ Blueprint saved'));
+        console.log(`  CONSTELLATION_BLUEPRINT=${blueprintPath}`);
+        console.log();
+
+        // Give the HTTP response time to reach the browser before closing
+        setTimeout(() => {
+          server.close(() => {
+            resolve(blueprintPath);
+          });
+        }, 500);
+      },
+    });
   });
 }

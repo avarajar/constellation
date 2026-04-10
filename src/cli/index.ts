@@ -3,13 +3,27 @@
  */
 import type { Command } from 'commander';
 import chalk from 'chalk';
+import { exec } from 'node:child_process';
+import { mkdir, writeFile, readFile, copyFile } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { homedir, platform } from 'node:os';
 import { createRegistry } from '../registry/index.js';
 import { runInteractivePrompts } from './prompts.js';
 import { banner, printError, printSummary, CATEGORY_LABELS } from './ui.js';
 import { createEngine } from '../core/engine.js';
 import { validateSelection } from '../validators/index.js';
-import { readFile } from 'node:fs/promises';
 import type { ProjectSelection } from '../core/types.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Open a URL in the default browser (cross-platform).
+ */
+function openBrowser(url: string): void {
+  const cmd = platform() === 'darwin' ? 'open' : platform() === 'win32' ? 'start' : 'xdg-open';
+  exec(`${cmd} ${url}`);
+}
 
 /**
  * Register the "new" command for creating a project.
@@ -91,9 +105,6 @@ export function registerListCommand(program: Command): void {
 }
 
 /**
- * Register the "validate" command for checking a config file.
- */
-/**
  * Register the "web" command for starting the web UI.
  */
 export function registerWebCommand(program: Command): void {
@@ -101,12 +112,28 @@ export function registerWebCommand(program: Command): void {
     .command('web')
     .description('Start the web UI for interactive project generation')
     .option('-p, --port <port>', 'Port number', '3210')
-    .action(async (opts: { port: string }) => {
-      const { startServer } = await import('../web/server.js');
-      startServer(parseInt(opts.port, 10));
+    .option('-w, --wait', 'Block until a blueprint is saved, then exit (used by Claude Code)')
+    .action(async (opts: { port: string; wait?: boolean }) => {
+      const port = parseInt(opts.port, 10);
+
+      if (opts.wait) {
+        const { startServerAndWait } = await import('../web/server.js');
+        console.log(chalk.dim('  Opening browser...'));
+        setTimeout(() => openBrowser(`http://localhost:${port}`), 1000);
+        const blueprintPath = await startServerAndWait(port);
+        // Final output line — Claude Code parses this
+        console.log(blueprintPath);
+        process.exit(0);
+      } else {
+        const { startServer } = await import('../web/server.js');
+        startServer(port);
+      }
     });
 }
 
+/**
+ * Register the "validate" command for checking a config file.
+ */
 export function registerValidateCommand(program: Command): void {
   program
     .command('validate <config>')
@@ -143,4 +170,60 @@ export function registerValidateCommand(program: Command): void {
         process.exit(1);
       }
     });
+}
+
+/**
+ * Register the "install" command for setting up the Claude Code skill globally.
+ */
+export function registerInstallCommand(program: Command): void {
+  program
+    .command('install')
+    .description('Install the /constellation skill for Claude Code (copies to ~/.claude/commands/)')
+    .action(async () => {
+      try {
+        const skillSource = join(__dirname, '..', '..', 'commands', 'constellation.md');
+        const destDir = join(homedir(), '.claude', 'commands');
+        const destFile = join(destDir, 'constellation.md');
+
+        await mkdir(destDir, { recursive: true });
+
+        let skillContent: string;
+        try {
+          skillContent = await readFile(skillSource, 'utf-8');
+        } catch {
+          // Fallback: try the .claude/commands path (development mode)
+          const devSource = join(__dirname, '..', '..', '.claude', 'commands', 'constellation.md');
+          skillContent = await readFile(devSource, 'utf-8');
+        }
+
+        await writeFile(destFile, skillContent, 'utf-8');
+
+        console.log();
+        console.log(chalk.bold('  Constellation — Claude Code Skill Installed'));
+        console.log(chalk.dim('  ──────────────────────────────────────────'));
+        console.log(`  ${chalk.green('✔')} Copied to ${chalk.cyan(destFile)}`);
+        console.log();
+        console.log(`  Run ${chalk.cyan('/constellation')} in Claude Code to get started.`);
+        console.log();
+      } catch (err) {
+        printError(err instanceof Error ? err.message : String(err));
+        process.exit(1);
+      }
+    });
+}
+
+/**
+ * Register the default action (no subcommand = interactive web flow).
+ */
+export function registerDefaultAction(program: Command): void {
+  program.action(async () => {
+    // If no subcommand given, run the interactive web flow (same as `web --wait`)
+    const port = 3210;
+    const { startServerAndWait } = await import('../web/server.js');
+    console.log(chalk.dim('  Opening browser...'));
+    setTimeout(() => openBrowser(`http://localhost:${port}`), 1000);
+    const blueprintPath = await startServerAndWait(port);
+    console.log(blueprintPath);
+    process.exit(0);
+  });
 }

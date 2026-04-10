@@ -4,7 +4,14 @@
  */
 import { Command } from 'commander';
 import { createRequire } from 'node:module';
-import { registerNewCommand, registerListCommand, registerValidateCommand, registerWebCommand } from './cli/index.js';
+import {
+  registerNewCommand,
+  registerListCommand,
+  registerValidateCommand,
+  registerWebCommand,
+  registerInstallCommand,
+  registerDefaultAction,
+} from './cli/index.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string; description: string };
@@ -20,5 +27,7 @@ registerNewCommand(program);
 registerListCommand(program);
 registerValidateCommand(program);
 registerWebCommand(program);
+registerInstallCommand(program);
+registerDefaultAction(program);
 
 program.parse();
