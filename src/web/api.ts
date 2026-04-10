@@ -5,6 +5,8 @@ import type { ServerResponse } from 'node:http';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
+import { homedir } from 'node:os';
 import { createRegistry } from '../registry/index.js';
 import { validateSelection } from '../validators/index.js';
 import { runPipeline } from '../core/pipeline.js';
@@ -206,6 +208,7 @@ export async function handleCreateBlueprint(body: unknown, res: ServerResponse):
       return;
     }
 
+    const rawBody = body as Record<string, unknown>;
     const selection = body as ProjectSelection;
 
     if (!selection.name) {
@@ -232,7 +235,23 @@ export async function handleCreateBlueprint(body: unknown, res: ServerResponse):
       .filter((t): t is Technology => t !== undefined);
 
     // Generate blueprint YAML
-    const blueprintYaml = generateBlueprint(selection, selectedTechs);
+    let blueprintYaml = generateBlueprint(selection, selectedTechs);
+
+    // Append GitHub preferences if provided
+    const github = rawBody.github as Record<string, unknown> | undefined;
+    if (github) {
+      blueprintYaml += '\ngithub:\n';
+      blueprintYaml += `  mode: ${String(github.mode ?? 'none')}\n`;
+      if (github.org) {
+        blueprintYaml += `  org: ${String(github.org)}\n`;
+      }
+      if (github.repoName) {
+        blueprintYaml += `  repoName: ${String(github.repoName)}\n`;
+      }
+      if (github.existingRepo) {
+        blueprintYaml += `  existingRepo: ${String(github.existingRepo)}\n`;
+      }
+    }
 
     // Save to disk
     const outputDir = resolve(selection.outputDir);
@@ -243,6 +262,94 @@ export async function handleCreateBlueprint(body: unknown, res: ServerResponse):
       blueprint: blueprintYaml,
       path: blueprintPath,
     });
+  } catch (err) {
+    errorResponse(res, 500, err instanceof Error ? err.message : String(err));
+  }
+}
+
+// ─── Home Directory Handler ──────────────────────────────────────
+
+/**
+ * GET /api/home-dir — returns the user's home directory.
+ */
+export function handleGetHomeDir(res: ServerResponse): void {
+  json(res, 200, { homeDir: homedir() });
+}
+
+// ─── GitHub Handlers ─────────────────────────────────────────────
+
+/**
+ * GET /api/github/orgs — lists the user's GitHub username and orgs.
+ * Requires the `gh` CLI to be installed and authenticated.
+ */
+export function handleGetGithubOrgs(res: ServerResponse): void {
+  try {
+    // Get the authenticated user's login
+    let username = '';
+    try {
+      const userJson = execSync('gh api user', { encoding: 'utf-8', timeout: 10000 });
+      const user = JSON.parse(userJson) as { login?: string };
+      username = user.login ?? '';
+    } catch {
+      errorResponse(res, 500, 'GitHub CLI is not installed or not authenticated. Run `gh auth login` first.');
+      return;
+    }
+
+    // Get the list of orgs
+    let orgs: string[] = [];
+    try {
+      const orgsRaw = execSync('gh org list', { encoding: 'utf-8', timeout: 10000 }).trim();
+      orgs = orgsRaw ? orgsRaw.split('\n').map((o) => o.trim()).filter(Boolean) : [];
+    } catch {
+      // User might not belong to any orgs — that's fine
+      orgs = [];
+    }
+
+    json(res, 200, { username, orgs });
+  } catch (err) {
+    errorResponse(res, 500, err instanceof Error ? err.message : String(err));
+  }
+}
+
+/**
+ * GET /api/github/repos?org=xxx&q=search
+ * Lists repos for a given org (or personal repos if org is empty).
+ */
+export function handleGetGithubRepos(org: string, query: string, res: ServerResponse): void {
+  try {
+    const target = org || '';
+    const limitFlag = '--limit 20';
+    const jsonFlag = '--json name,url,description';
+
+    let cmd: string;
+    if (target) {
+      cmd = `gh repo list ${target} ${jsonFlag} ${limitFlag}`;
+    } else {
+      cmd = `gh repo list ${jsonFlag} ${limitFlag}`;
+    }
+
+    let reposRaw: string;
+    try {
+      reposRaw = execSync(cmd, { encoding: 'utf-8', timeout: 15000 });
+    } catch {
+      errorResponse(res, 500, 'Failed to list repositories. Ensure `gh` is installed and authenticated.');
+      return;
+    }
+
+    let repos: Array<{ name: string; url: string; description: string }> = [];
+    try {
+      repos = JSON.parse(reposRaw) as Array<{ name: string; url: string; description: string }>;
+    } catch {
+      repos = [];
+    }
+
+    // Filter by query if provided
+    if (query) {
+      const q = query.toLowerCase();
+      repos = repos.filter((r) => r.name.toLowerCase().includes(q));
+    }
+
+    json(res, 200, { repos });
   } catch (err) {
     errorResponse(res, 500, err instanceof Error ? err.message : String(err));
   }

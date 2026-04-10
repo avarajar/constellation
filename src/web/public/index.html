@@ -67,8 +67,9 @@
 
         <div class="field">
           <label for="outputDir">Output Directory</label>
-          <input type="text" id="outputDir" placeholder="./my-awesome-app">
-          <span class="field-hint">Where the project will be generated.</span>
+          <input type="text" id="outputDir" placeholder="/Users/joselito/projects/my-awesome-app">
+          <span class="field-hint" id="outputDirHint">Where the project will be generated.</span>
+          <span class="field-resolved-path" id="resolvedPath"></span>
         </div>
 
         <div class="field">
@@ -94,6 +95,40 @@
             <button class="toggle-btn" data-monorepo-tool="nx" role="radio" aria-checked="false">Nx</button>
             <button class="toggle-btn" data-monorepo-tool="none" role="radio" aria-checked="false">None</button>
           </div>
+        </div>
+
+        <!-- GitHub Repository -->
+        <div class="field">
+          <label>GitHub Repository</label>
+          <div class="toggle-group" role="radiogroup" aria-label="GitHub repository mode">
+            <button class="toggle-btn active" data-github="new" role="radio" aria-checked="true">New Repo</button>
+            <button class="toggle-btn" data-github="existing" role="radio" aria-checked="false">Existing Repo</button>
+            <button class="toggle-btn" data-github="none" role="radio" aria-checked="false">No Repo</button>
+          </div>
+        </div>
+
+        <!-- GitHub: New repo options -->
+        <div class="field github-new-field" id="githubNewField">
+          <label>Organization</label>
+          <div class="github-org-selector" id="githubOrgSelector">
+            <span class="field-hint">Loading GitHub orgs...</span>
+          </div>
+          <div class="github-repo-name-row" style="margin-top: .75rem;">
+            <label for="githubRepoName">Repository Name</label>
+            <input type="text" id="githubRepoName" placeholder="my-awesome-app" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <!-- GitHub: Existing repo search -->
+        <div class="field github-existing-field hidden" id="githubExistingField">
+          <label>Search Repositories</label>
+          <div class="github-repo-search-row">
+            <select id="githubExistingOrg" class="github-org-dropdown">
+              <option value="">Loading...</option>
+            </select>
+            <input type="text" id="githubRepoSearch" placeholder="Search repos..." autocomplete="off" spellcheck="false">
+          </div>
+          <div class="github-repo-results" id="githubRepoResults"></div>
         </div>
       </div>
 
@@ -167,38 +202,22 @@
         <button class="btn btn-ghost btn-prev" data-dir="prev">
           <span class="btn-arrow">&larr;</span> Back
         </button>
-        <div class="generate-buttons">
-          <button class="btn btn-primary btn-generate" id="btnGenerate">
-            <span class="btn-generate-text">Generate with Templates</span>
-            <span class="spinner hidden"></span>
-          </button>
-          <button class="btn btn-accent btn-generate" id="btnBlueprint">
-            <span class="btn-generate-text">Generate Blueprint for Claude Code</span>
-            <span class="spinner hidden"></span>
-          </button>
-        </div>
+        <button class="btn btn-primary btn-generate btn-send-claude" id="btnGenerate">
+          <span class="btn-generate-text">Send to Claude Code</span>
+          <span class="btn-generate-icon">&#10022;</span>
+          <span class="spinner hidden"></span>
+        </button>
       </div>
 
-      <!-- Success overlay (hidden until generation completes) -->
+      <!-- Success overlay -->
       <div class="success-overlay hidden" id="successOverlay">
-        <div class="success-card">
-          <div class="success-icon">&#10024;</div>
-          <h3>Project Generated!</h3>
-          <div id="successDetails"></div>
-          <button class="btn btn-primary" id="btnNewProject">Start New Project</button>
-        </div>
-        <canvas id="confettiCanvas"></canvas>
-      </div>
-
-      <!-- Blueprint overlay (hidden until blueprint generation completes) -->
-      <div class="success-overlay hidden" id="blueprintOverlay">
         <div class="success-card success-card-wide">
-          <div class="success-icon">&#9998;</div>
-          <h3>Blueprint Generated!</h3>
-          <div id="blueprintDetails"></div>
+          <div class="success-icon">&#10022;</div>
+          <h3>Blueprint Saved!</h3>
+          <div id="successDetails"></div>
           <div class="blueprint-actions">
             <button class="btn btn-ghost" id="btnCopyPath">Copy Path</button>
-            <button class="btn btn-primary" id="btnNewProjectBp">Start New Project</button>
+            <button class="btn btn-primary" id="btnNewProject">Start New Project</button>
           </div>
         </div>
       </div>

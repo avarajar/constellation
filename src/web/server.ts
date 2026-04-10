@@ -14,6 +14,9 @@ import {
   handleCreateBlueprint,
   handleSearchOnline,
   handleAddTechnology,
+  handleGetHomeDir,
+  handleGetGithubOrgs,
+  handleGetGithubRepos,
 } from './api.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -91,6 +94,23 @@ export function startServer(port: number): void {
 
       if (pathname === '/api/categories' && method === 'GET') {
         handleGetCategories(res);
+        return;
+      }
+
+      if (pathname === '/api/home-dir' && method === 'GET') {
+        handleGetHomeDir(res);
+        return;
+      }
+
+      if (pathname === '/api/github/orgs' && method === 'GET') {
+        handleGetGithubOrgs(res);
+        return;
+      }
+
+      if (pathname === '/api/github/repos' && method === 'GET') {
+        const org = url.searchParams.get('org') || '';
+        const q = url.searchParams.get('q') || '';
+        handleGetGithubRepos(org, q, res);
         return;
       }
 

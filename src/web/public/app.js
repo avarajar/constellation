@@ -13,6 +13,15 @@ const state = {
     mode: 'new',
     monorepo: { enabled: false, tool: null },
   },
+  github: {
+    mode: 'new',        // 'new' | 'existing' | 'none'
+    org: null,           // selected org (null = personal)
+    repoName: '',        // for new repo
+    existingRepo: null,  // URL for existing repo
+    username: '',        // GitHub username
+    orgs: [],            // list of org names
+  },
+  homeDir: '',           // user's home directory from API
   groups: [],            // TechCategoryGroup[] with nested categories & techs
   technologies: [],      // flat list of all Technology objects
   selected: new Set(),   // selected tech IDs
@@ -135,6 +144,34 @@ async function fetchTechnologies() {
   }
 }
 
+async function fetchHomeDir() {
+  try {
+    const data = await api('GET', '/api/home-dir');
+    state.homeDir = data.homeDir || '';
+  } catch {
+    state.homeDir = '';
+  }
+}
+
+async function fetchGithubOrgs() {
+  try {
+    const data = await api('GET', '/api/github/orgs');
+    state.github.username = data.username || '';
+    state.github.orgs = data.orgs || [];
+  } catch {
+    state.github.username = '';
+    state.github.orgs = [];
+  }
+}
+
+async function fetchGithubRepos(org, query) {
+  const params = new URLSearchParams();
+  if (org) params.set('org', org);
+  if (query) params.set('q', query);
+  const data = await api('GET', '/api/github/repos?' + params.toString());
+  return data.repos || [];
+}
+
 const debouncedValidate = debounce(async () => {
   if (state.selected.size === 0) {
     state.validation = { valid: true, errors: [], warnings: [] };
@@ -151,25 +188,33 @@ const debouncedValidate = debounce(async () => {
   renderValidationBadges();
 }, 300);
 
+function getDefaultOutputDir(name) {
+  const base = state.homeDir ? state.homeDir + '/projects' : '/tmp/projects';
+  return name ? base + '/' + name : base;
+}
+
 function buildSelectionBody() {
   const sel = state.technologies.filter(t => state.selected.has(t.id));
-  return {
+  const body = {
     name: state.project.name,
     description: state.project.description || undefined,
-    outputDir: state.project.outputDir || './' + state.project.name,
+    outputDir: state.project.outputDir || getDefaultOutputDir(state.project.name),
     mode: state.project.mode,
     monorepo: state.project.monorepo.enabled
       ? { enabled: true, tool: state.project.monorepo.tool || 'none' }
       : undefined,
     technologies: sel.map(t => ({ id: t.id, category: t.category })),
+    github: {
+      mode: state.github.mode,
+      org: state.github.org || null,
+      repoName: state.github.repoName || state.project.name,
+      existingRepo: state.github.existingRepo || null,
+    },
   };
+  return body;
 }
 
-async function generate() {
-  return api('POST', '/api/generate', buildSelectionBody());
-}
-
-async function generateBlueprintApi() {
+async function sendToClaudeCode() {
   return api('POST', '/api/blueprint', buildSelectionBody());
 }
 
@@ -216,12 +261,24 @@ function renderStep1() {
   const nameInput = $('#projectName', section);
   const descInput = $('#projectDesc', section);
   const dirInput = $('#outputDir', section);
+  const resolvedPathEl = $('#resolvedPath', section);
   const nextBtn = $('.btn-next', section);
+
+  // Set default output dir if empty
+  if (!state.project.outputDir && state.project.name) {
+    state.project.outputDir = getDefaultOutputDir(state.project.name);
+  }
 
   // Restore state
   nameInput.value = state.project.name;
   descInput.value = state.project.description;
   dirInput.value = state.project.outputDir;
+
+  function updateResolvedPath() {
+    const dir = dirInput.value || getDefaultOutputDir(state.project.name || 'my-app');
+    resolvedPathEl.textContent = dir;
+  }
+  updateResolvedPath();
 
   // Mode toggle
   $$('[data-mode]', section).forEach(btn => {
@@ -244,6 +301,88 @@ function renderStep1() {
     });
   }
 
+  // ── GitHub section ──
+  const githubNewField = $('#githubNewField', section);
+  const githubExistingField = $('#githubExistingField', section);
+  const githubRepoNameInput = $('#githubRepoName', section);
+
+  // Restore GitHub toggle state
+  $$('[data-github]', section).forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.github === state.github.mode);
+    btn.setAttribute('aria-checked', btn.dataset.github === state.github.mode);
+  });
+
+  function updateGithubFieldVisibility() {
+    githubNewField.classList.toggle('hidden', state.github.mode !== 'new');
+    githubExistingField.classList.toggle('hidden', state.github.mode !== 'existing');
+  }
+  updateGithubFieldVisibility();
+
+  // Populate GitHub org selector for "New Repo"
+  function renderGithubOrgSelector() {
+    const container = $('#githubOrgSelector', section);
+    if (!state.github.username && state.github.orgs.length === 0) {
+      container.innerHTML = '<span class="field-hint">GitHub CLI not available or not authenticated.</span>';
+      return;
+    }
+
+    let html = '';
+    // Personal account
+    const isPersonal = !state.github.org;
+    html += `<button class="github-org-btn ${isPersonal ? 'active' : ''}" data-org="">${escHtml(state.github.username)} <span class="github-org-label">Personal</span></button>`;
+    // Orgs
+    for (const org of state.github.orgs) {
+      const isActive = state.github.org === org;
+      html += `<button class="github-org-btn ${isActive ? 'active' : ''}" data-org="${escHtml(org)}">${escHtml(org)}</button>`;
+    }
+    container.innerHTML = html;
+  }
+  renderGithubOrgSelector();
+
+  // Populate org dropdown for "Existing Repo"
+  function renderExistingOrgDropdown() {
+    const dropdown = $('#githubExistingOrg', section);
+    let html = `<option value="">${escHtml(state.github.username || 'Personal')}</option>`;
+    for (const org of state.github.orgs) {
+      html += `<option value="${escHtml(org)}">${escHtml(org)}</option>`;
+    }
+    dropdown.innerHTML = html;
+  }
+  renderExistingOrgDropdown();
+
+  // GitHub repo name
+  githubRepoNameInput.value = state.github.repoName || state.project.name;
+
+  // Existing repo search
+  const repoSearchInput = $('#githubRepoSearch', section);
+  const repoResultsEl = $('#githubRepoResults', section);
+  const existingOrgDropdown = $('#githubExistingOrg', section);
+
+  const debouncedRepoSearch = debounce(async () => {
+    const q = repoSearchInput.value.trim();
+    const org = existingOrgDropdown.value;
+    if (!q) {
+      repoResultsEl.innerHTML = '';
+      return;
+    }
+    repoResultsEl.innerHTML = '<div class="github-repo-loading">Searching...</div>';
+    try {
+      const repos = await fetchGithubRepos(org, q);
+      if (repos.length === 0) {
+        repoResultsEl.innerHTML = '<div class="github-repo-loading">No repos found.</div>';
+        return;
+      }
+      repoResultsEl.innerHTML = repos.map(r => `
+        <button class="github-repo-result" data-repo-url="${escHtml(r.url)}" data-repo-name="${escHtml(r.name)}">
+          <span class="github-repo-result-name">${escHtml(r.name)}</span>
+          <span class="github-repo-result-desc">${escHtml(r.description || '')}</span>
+        </button>
+      `).join('');
+    } catch {
+      repoResultsEl.innerHTML = '<div class="github-repo-loading">Search failed.</div>';
+    }
+  }, 400);
+
   // Validate next
   function checkNext() {
     const valid = nameInput.value.trim().length > 0 && /^[a-z0-9][a-z0-9._-]*$/i.test(nameInput.value.trim());
@@ -255,17 +394,38 @@ function renderStep1() {
   section.addEventListener('input', (e) => {
     if (e.target === nameInput) {
       state.project.name = nameInput.value.trim();
-      if (!state.project.outputDir || state.project.outputDir.startsWith('./')) {
-        dirInput.value = './' + state.project.name;
-        state.project.outputDir = dirInput.value;
+      // Auto-update output dir unless user has customized it
+      const defaultDir = getDefaultOutputDir(state.project.name);
+      const prevDefault = getDefaultOutputDir('');
+      if (!state.project.outputDir || state.project.outputDir.startsWith(prevDefault)) {
+        dirInput.value = defaultDir;
+        state.project.outputDir = defaultDir;
       }
+      // Auto-update GitHub repo name
+      if (githubRepoNameInput && state.github.mode === 'new') {
+        githubRepoNameInput.value = state.project.name;
+        state.github.repoName = state.project.name;
+      }
+      updateResolvedPath();
       checkNext();
     } else if (e.target === descInput) {
       state.project.description = descInput.value;
     } else if (e.target === dirInput) {
       state.project.outputDir = dirInput.value;
+      updateResolvedPath();
+    } else if (e.target === githubRepoNameInput) {
+      state.github.repoName = githubRepoNameInput.value.trim();
+    } else if (e.target === repoSearchInput) {
+      debouncedRepoSearch();
     }
   });
+
+  // Change event for the existing org dropdown
+  if (existingOrgDropdown) {
+    existingOrgDropdown.addEventListener('change', () => {
+      debouncedRepoSearch();
+    });
+  }
 
   section.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
@@ -292,6 +452,41 @@ function renderStep1() {
       $$('[data-monorepo-tool]', section).forEach(b => {
         b.classList.toggle('active', b.dataset.monorepoTool === state.project.monorepo.tool);
       });
+    }
+
+    // GitHub mode toggle
+    if (btn.dataset.github) {
+      state.github.mode = btn.dataset.github;
+      $$('[data-github]', section).forEach(b => {
+        b.classList.toggle('active', b.dataset.github === state.github.mode);
+        b.setAttribute('aria-checked', b.dataset.github === state.github.mode);
+      });
+      updateGithubFieldVisibility();
+    }
+
+    // GitHub org selector (new repo)
+    if (btn.dataset.org !== undefined && btn.closest('#githubOrgSelector')) {
+      state.github.org = btn.dataset.org || null;
+      $$('.github-org-btn', section).forEach(b => {
+        b.classList.toggle('active', (b.dataset.org || null) === (state.github.org || null));
+      });
+    }
+
+    // GitHub existing repo result click
+    if (btn.dataset.repoUrl !== undefined) {
+      state.github.existingRepo = btn.dataset.repoUrl;
+      const repoName = btn.dataset.repoName;
+      // Update project name and output dir to match
+      nameInput.value = repoName;
+      state.project.name = repoName;
+      dirInput.value = getDefaultOutputDir(repoName);
+      state.project.outputDir = dirInput.value;
+      updateResolvedPath();
+      checkNext();
+      // Highlight selected
+      $$('.github-repo-result', section).forEach(r => r.classList.remove('selected'));
+      btn.classList.add('selected');
+      toast('Selected repo: ' + repoName, 'success');
     }
 
     if (btn.dataset.dir === 'next') nextStep();
@@ -767,46 +962,26 @@ function renderStep3() {
   // Tree preview
   renderProjectTree(section);
 
-  // Generate with Templates button
+  // Send to Claude Code button
   const genBtn = $('#btnGenerate', section);
   genBtn.addEventListener('click', async () => {
     if (state.generating) return;
     state.generating = true;
     genBtn.disabled = true;
-    $('.btn-generate-text', genBtn).textContent = 'Generating...';
+    $('.btn-generate-text', genBtn).textContent = 'Saving blueprint...';
+    $('.btn-generate-icon', genBtn).classList.add('hidden');
     $('.spinner', genBtn).classList.remove('hidden');
 
     try {
-      const result = await generate();
-      state.generationResult = result;
+      const result = await sendToClaudeCode();
       showSuccess(section, result);
     } catch (err) {
-      toast('Generation failed: ' + err.message, 'error');
+      toast('Failed to save blueprint: ' + err.message, 'error');
       state.generating = false;
       genBtn.disabled = false;
-      $('.btn-generate-text', genBtn).textContent = 'Generate with Templates';
+      $('.btn-generate-text', genBtn).textContent = 'Send to Claude Code';
+      $('.btn-generate-icon', genBtn).classList.remove('hidden');
       $('.spinner', genBtn).classList.add('hidden');
-    }
-  });
-
-  // Generate Blueprint for Claude Code button
-  const bpBtn = $('#btnBlueprint', section);
-  bpBtn.addEventListener('click', async () => {
-    if (state.generating) return;
-    state.generating = true;
-    bpBtn.disabled = true;
-    $('.btn-generate-text', bpBtn).textContent = 'Generating Blueprint...';
-    $('.spinner', bpBtn).classList.remove('hidden');
-
-    try {
-      const result = await generateBlueprintApi();
-      showBlueprintSuccess(section, result);
-    } catch (err) {
-      toast('Blueprint generation failed: ' + err.message, 'error');
-      state.generating = false;
-      bpBtn.disabled = false;
-      $('.btn-generate-text', bpBtn).textContent = 'Generate Blueprint for Claude Code';
-      $('.spinner', bpBtn).classList.add('hidden');
     }
   });
 
@@ -814,10 +989,14 @@ function renderStep3() {
   section.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (btn?.dataset.dir === 'prev') prevStep();
-    if (btn?.id === 'btnNewProject' || btn?.id === 'btnNewProjectBp') {
+    if (btn?.id === 'btnNewProject') {
       // Reset
       state.step = 1;
       state.project = { name: '', description: '', outputDir: '', mode: 'new', monorepo: { enabled: false, tool: null } };
+      state.github.mode = 'new';
+      state.github.org = null;
+      state.github.repoName = '';
+      state.github.existingRepo = null;
       state.selected = new Set();
       state.validation = null;
       state.searchQuery = '';
@@ -942,104 +1121,17 @@ function showSuccess(section, result) {
   overlay.classList.remove('hidden');
 
   const details = $('#successDetails', section);
-  const fileCount = result.files?.length || 0;
-  const dir = result.outputDir || state.project.outputDir || './' + state.project.name;
-
-  let html = `
-    <p class="success-detail"><strong>${fileCount}</strong> files generated</p>
-    <p class="success-detail">Output: <code>${escHtml(dir)}</code></p>
-    <div class="success-next-steps">
-      <p><strong>Next steps:</strong></p>
-      <pre><code>cd ${escHtml(dir)}\nnpm install\nnpm run dev</code></pre>
-    </div>
-  `;
-
-  if (result.messages?.length) {
-    html += '<ul class="success-messages">';
-    for (const msg of result.messages) {
-      html += `<li>${escHtml(msg)}</li>`;
-    }
-    html += '</ul>';
-  }
-
-  details.innerHTML = html;
-
-  // Confetti
-  launchConfetti($('#confettiCanvas', section));
-}
-
-function showBlueprintSuccess(section, result) {
-  const overlay = $('#blueprintOverlay', section);
-  overlay.classList.remove('hidden');
-
-  const details = $('#blueprintDetails', section);
   const bpPath = result.path || '';
 
   let html = `
-    <p class="success-detail">Blueprint saved to:</p>
-    <p class="success-detail"><code id="blueprintPathValue">${escHtml(bpPath)}</code></p>
+    <p class="success-detail success-path-label">Path:</p>
+    <p class="success-detail"><code id="blueprintPathValue" class="success-path-code">${escHtml(bpPath)}</code></p>
     <div class="success-next-steps">
-      <p><strong>Next step:</strong> Open Claude Code and run:</p>
-      <pre><code>/constellation ${escHtml(bpPath)}</code></pre>
+      <p>Go back to <strong>Claude Code</strong> — generation will start automatically.</p>
     </div>
-    <details class="blueprint-preview">
-      <summary>Preview Blueprint YAML</summary>
-      <pre class="blueprint-yaml"><code>${escHtml(result.blueprint || '')}</code></pre>
-    </details>
   `;
 
   details.innerHTML = html;
-}
-
-// ── Confetti ───────────────────────────────────────────────
-function launchConfetti(canvas) {
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const colors = ['#7c5cff', '#9678ff', '#00d4aa', '#ffb347', '#ff5757', '#e8e8f0'];
-  const pieces = Array.from({ length: 120 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height - canvas.height,
-    w: Math.random() * 8 + 4,
-    h: Math.random() * 6 + 3,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    vx: (Math.random() - .5) * 4,
-    vy: Math.random() * 3 + 2,
-    rot: Math.random() * 360,
-    rv: (Math.random() - .5) * 8,
-    opacity: 1,
-  }));
-
-  let frame = 0;
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    let alive = false;
-
-    for (const p of pieces) {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += p.rv;
-      p.vy += 0.04; // gravity
-
-      if (frame > 60) p.opacity -= 0.008;
-      if (p.opacity <= 0) continue;
-      alive = true;
-
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, p.opacity);
-      ctx.translate(p.x, p.y);
-      ctx.rotate((p.rot * Math.PI) / 180);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-      ctx.restore();
-    }
-
-    frame++;
-    if (alive && frame < 300) requestAnimationFrame(draw);
-  }
-
-  requestAnimationFrame(draw);
 }
 
 // ── Navigation ─────────────────────────────────────────────
@@ -1047,7 +1139,7 @@ function nextStep() {
   if (state.step === 1) {
     if (!state.project.name) return;
     if (!state.project.outputDir) {
-      state.project.outputDir = './' + state.project.name;
+      state.project.outputDir = getDefaultOutputDir(state.project.name);
     }
   }
 
@@ -1104,11 +1196,14 @@ async function init() {
   `;
 
   try {
-    await fetchTechnologies();
+    await Promise.all([
+      fetchTechnologies(),
+      fetchHomeDir(),
+      fetchGithubOrgs(),
+    ]);
   } catch (err) {
-    console.error('Failed to load technologies:', err);
-    // Still allow the wizard to work; step 2 will just be empty
-    toast('Could not load technologies from API. The server may not be running.', 'warning');
+    console.error('Failed to load initial data:', err);
+    toast('Could not load data from API. The server may not be running.', 'warning');
   }
 
   render();

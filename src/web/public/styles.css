@@ -837,14 +837,19 @@ a:hover { color: var(--primary-hover); }
 
 .success-card .btn { margin-top: 1.5rem; }
 
-#confettiCanvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
+.success-next-steps {
+  margin-top: .75rem;
+  color: var(--text-sec);
+  font-size: .88rem;
+  line-height: 1.6;
 }
+
+.success-next-steps strong {
+  color: var(--text);
+  -webkit-text-fill-color: initial;
+}
+
+/* confetti canvas removed */
 
 /* ── Toasts ─────────────────────────────────────────────── */
 .toast-container {
@@ -1202,42 +1207,26 @@ a:hover { color: var(--primary-hover); }
   .tech-grid { grid-template-columns: 1fr; }
   .review-summary { grid-template-columns: 1fr; }
   .success-card { padding: 2rem 1.5rem; }
-  .generate-buttons { flex-direction: column; }
+  .btn-send-claude { width: 100%; justify-content: center; }
+  .github-repo-search-row { flex-direction: column; }
 }
 
-/* ── Generate Buttons ──────────────────────────────────── */
-.generate-buttons {
-  display: flex;
-  gap: .75rem;
-  align-items: center;
+/* ── Send to Claude Code Button ───────────────────────── */
+.btn-send-claude {
+  padding: .85rem 2.5rem;
+  font-size: 1rem;
+  gap: .6rem;
 }
 
-.btn-accent {
-  background: linear-gradient(135deg, var(--secondary), #00b894);
-  color: #0a0a0f;
-  font-weight: 600;
-  border: none;
-  border-radius: var(--radius);
-  padding: .75rem 1.5rem;
-  cursor: pointer;
-  font-size: .88rem;
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+.btn-send-claude .btn-generate-icon {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, .85);
+  animation: pulse-glow 3s ease-in-out infinite;
 }
 
-.btn-accent:hover:not(:disabled) {
-  background: linear-gradient(135deg, #00e6b8, #00d4aa);
-  box-shadow: 0 0 20px rgba(0, 212, 170, .35);
-  transform: translateY(-1px);
-}
-
-.btn-accent:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-/* ── Blueprint Overlay ─────────────────────────────────── */
+/* ── Success Overlay (Blueprint Saved) ───────────────── */
 .success-card-wide {
-  max-width: 640px;
+  max-width: 560px;
 }
 
 .blueprint-actions {
@@ -1247,35 +1236,189 @@ a:hover { color: var(--primary-hover); }
   margin-top: 1.5rem;
 }
 
-.blueprint-preview {
-  margin-top: 1.25rem;
-  text-align: left;
+.success-path-label {
+  margin-top: .5rem;
+  color: var(--text-muted) !important;
+  font-size: .82rem !important;
 }
 
-.blueprint-preview summary {
-  cursor: pointer;
-  color: var(--text-sec);
-  font-size: .85rem;
-  margin-bottom: .5rem;
-}
-
-.blueprint-preview summary:hover {
-  color: var(--text);
-}
-
-.blueprint-yaml {
+.success-path-code {
+  display: block;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 1rem;
+  padding: .6rem .85rem;
   font-family: var(--font-mono);
-  font-size: .78rem;
-  line-height: 1.5;
-  max-height: 320px;
-  overflow: auto;
-  color: var(--text-sec);
+  font-size: .82rem;
+  color: var(--secondary);
+  word-break: break-all;
+  margin: .25rem 0 .75rem;
 }
 
-.blueprint-yaml code {
-  white-space: pre;
+/* ── GitHub Section (Step 1) ─────────────────────────── */
+.field-resolved-path {
+  display: block;
+  font-size: .75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  margin-top: .25rem;
+  opacity: .7;
+}
+
+.github-org-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.github-org-btn {
+  padding: .45rem .85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-sec);
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font);
+}
+
+.github-org-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.github-org-btn.active {
+  border-color: var(--primary);
+  background: rgba(124, 92, 255, .1);
+  color: var(--text);
+}
+
+.github-org-label {
+  font-size: .7rem;
+  color: var(--text-muted);
+  margin-left: .25rem;
+}
+
+.github-repo-name-row label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-sec);
+  margin-bottom: .35rem;
+}
+
+.github-repo-name-row input {
+  width: 100%;
+  padding: .55rem .75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: .88rem;
+  font-family: var(--font-mono);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.github-repo-name-row input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, .15);
+}
+
+.github-repo-search-row {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+
+.github-org-dropdown {
+  padding: .55rem .75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: .85rem;
+  font-family: var(--font);
+  min-width: 140px;
+  cursor: pointer;
+}
+
+.github-org-dropdown:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.github-repo-search-row input {
+  flex: 1;
+  padding: .55rem .75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: .88rem;
+  font-family: var(--font-mono);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.github-repo-search-row input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, .15);
+}
+
+.github-repo-results {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.github-repo-result {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  padding: .55rem .75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  font-family: var(--font);
+}
+
+.github-repo-result:hover {
+  border-color: var(--primary);
+  background: rgba(124, 92, 255, .06);
+}
+
+.github-repo-result.selected {
+  border-color: var(--primary);
+  background: rgba(124, 92, 255, .1);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.github-repo-result-name {
+  font-weight: 600;
+  font-size: .85rem;
+  color: var(--text);
+}
+
+.github-repo-result-desc {
+  font-size: .75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.github-repo-loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-muted);
+  font-size: .82rem;
 }
