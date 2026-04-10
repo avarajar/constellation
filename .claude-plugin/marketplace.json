@@ -1,13 +1,22 @@
 {
-  "version": "1",
-  "plugins": {
-    "constellation": {
-      "version": "0.1.0",
+  "name": "constellation",
+  "owner": {
+    "name": "Jose Andrade",
+    "email": "avarajar@github.com"
+  },
+  "plugins": [
+    {
+      "name": "constellation",
+      "source": "./plugin",
       "description": "Interactive project generator — visual web UI to select your tech stack, then AI-generates a fully functional project",
-      "source": {
-        "source": "local",
-        "path": "./"
-      }
+      "version": "0.1.0",
+      "author": {
+        "name": "Jose Andrade"
+      },
+      "homepage": "https://github.com/avarajar/constellation",
+      "repository": "https://github.com/avarajar/constellation",
+      "license": "MIT",
+      "keywords": ["project-generator", "scaffolding", "ai", "fullstack", "web-ui"]
     }
-  }
+  ]
 }

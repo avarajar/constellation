@@ -8,23 +8,35 @@ You are the Constellation project generator. Follow these steps in order.
 
 ## Step 1: Launch Web UI and Wait for Blueprint
 
-Run Constellation in interactive mode. This opens the web UI and blocks until the user finishes configuring their stack:
+Run Constellation in interactive mode. This opens the web UI and blocks until the user finishes configuring their stack.
 
+Try these in order until one works:
+
+1. If `constellation` CLI is available:
 ```bash
-constellation web --wait
+constellation web --wait 2>/dev/null | tail -1
 ```
 
-Run this with a 600000ms timeout. The command:
+2. If the npm package is published:
+```bash
+npx constellation@latest web --wait 2>/dev/null | tail -1
+```
+
+3. Otherwise, clone and run from source:
+```bash
+CONSTELLATION_DIR="${TMPDIR:-/tmp}/constellation-cli"
+if [ ! -d "$CONSTELLATION_DIR" ]; then
+  git clone --depth 1 https://github.com/avarajar/constellation.git "$CONSTELLATION_DIR" && cd "$CONSTELLATION_DIR" && npm install --silent
+fi
+cd "$CONSTELLATION_DIR" && npx tsx src/index.ts web --wait 2>/dev/null | tail -1
+```
+
+Run whichever command with a 600000ms timeout. The command:
 1. Starts the web server at http://localhost:3210
 2. Opens the browser automatically
 3. Blocks until the user clicks "Send to Claude Code"
 4. Outputs the blueprint file path as the last line of stdout
 5. Shuts down the server
-
-If `constellation` is not found, try:
-```bash
-npx constellation@latest web --wait
-```
 
 Capture the last line of output — that is the absolute path to the blueprint YAML file.
 

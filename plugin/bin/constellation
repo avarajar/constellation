@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Constellation CLI wrapper for the Claude Code plugin.
+# Tries: npx global → npx registry → clone from GitHub.
+set -euo pipefail
+
+if npx constellation@latest --version &>/dev/null 2>&1; then
+  exec npx constellation@latest "$@"
+fi
+
+CONSTELLATION_DIR="${TMPDIR:-/tmp}/constellation-cli"
+if [ ! -d "$CONSTELLATION_DIR" ]; then
+  echo "  Downloading Constellation..." >&2
+  git clone --depth 1 https://github.com/avarajar/constellation.git "$CONSTELLATION_DIR" >&2
+  (cd "$CONSTELLATION_DIR" && npm install --silent) >&2
+fi
+
+exec npx tsx "$CONSTELLATION_DIR/src/index.ts" "$@"
