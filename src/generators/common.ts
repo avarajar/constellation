@@ -393,6 +393,98 @@ function generateSetupScript(ctx: GeneratorContext): string {
   return lines.join('\n');
 }
 
+// ─── Monorepo: Turborepo ──────────────────────────────────────────
+
+function generateTurboJson(): string {
+  return JSON.stringify(
+    {
+      $schema: 'https://turbo.build/schema.json',
+      pipeline: {
+        build: {
+          dependsOn: ['^build'],
+          outputs: ['dist/**', '.next/**', '.nuxt/**'],
+        },
+        test: {
+          dependsOn: ['^build'],
+        },
+        lint: {},
+        dev: {
+          cache: false,
+          persistent: true,
+        },
+      },
+    },
+    null,
+    2,
+  );
+}
+
+function generateMonorepoRootPackageJson(ctx: GeneratorContext): string {
+  const name = ctx.selection.name;
+  return JSON.stringify(
+    {
+      name,
+      private: true,
+      workspaces: ['frontend', 'backend', 'packages/*'],
+      scripts: {
+        dev: 'turbo run dev',
+        build: 'turbo run build',
+        test: 'turbo run test',
+        lint: 'turbo run lint',
+      },
+      devDependencies: {
+        turbo: 'latest',
+      },
+    },
+    null,
+    2,
+  );
+}
+
+function generatePackagesPlaceholder(): string {
+  return '# Shared packages directory\n\nPlace shared libraries and utilities in this directory.\n';
+}
+
+// ─── Monorepo: Nx ─────────────────────────────────────────────────
+
+function generateNxJson(): string {
+  return JSON.stringify(
+    {
+      $schema: './node_modules/nx/schemas/nx-schema.json',
+      defaultProject: 'backend',
+      targetDefaults: {
+        build: {
+          dependsOn: ['^build'],
+        },
+        test: {
+          dependsOn: ['^build'],
+        },
+      },
+      namedInputs: {
+        default: ['{projectRoot}/**/*', 'sharedGlobals'],
+        sharedGlobals: [],
+        production: ['default', '!{projectRoot}/**/*.spec.*', '!{projectRoot}/test/**/*'],
+      },
+    },
+    null,
+    2,
+  );
+}
+
+function generateWorkspaceJson(): string {
+  return JSON.stringify(
+    {
+      version: 2,
+      projects: {
+        frontend: 'frontend',
+        backend: 'backend',
+      },
+    },
+    null,
+    2,
+  );
+}
+
 // ─── Generator ─────────────────────────────────────────────────────
 
 export function createCommonGenerator(): Generator {
@@ -408,6 +500,22 @@ export function createCommonGenerator(): Generator {
       files.push({ path: '.gitignore', content: generateGitignore(ctx) });
       files.push({ path: 'Makefile', content: generateMakefile(ctx) });
       files.push({ path: 'scripts/setup.sh', content: generateSetupScript(ctx) });
+
+      // ── Monorepo configuration ──
+      if (ctx.selection.monorepo?.enabled) {
+        const tool = ctx.selection.monorepo.tool;
+
+        if (tool === 'turborepo') {
+          files.push({ path: 'turbo.json', content: generateTurboJson() });
+          files.push({ path: 'package.json', content: generateMonorepoRootPackageJson(ctx) });
+          files.push({ path: 'packages/.gitkeep', content: generatePackagesPlaceholder() });
+        }
+
+        if (tool === 'nx') {
+          files.push({ path: 'nx.json', content: generateNxJson() });
+          files.push({ path: 'workspace.json', content: generateWorkspaceJson() });
+        }
+      }
 
       return {
         files,

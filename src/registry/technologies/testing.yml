@@ -97,3 +97,12 @@ technologies:
     tags: ["api", "http", "vscode", "lightweight"]
     version: "2024.1"
     homepage: "https://marketplace.visualstudio.com/items?itemName=humao.rest-client"
+
+  - id: "thunder-client"
+    name: "Thunder Client"
+    category: "testing-api"
+    description: "Lightweight REST API client extension for VS Code"
+    language: "json"
+    version: "2.30.0"
+    tags: ["api", "rest", "vscode"]
+    homepage: "https://www.thunderclient.com"

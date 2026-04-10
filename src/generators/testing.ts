@@ -334,6 +334,253 @@ function cypressSupport(): string {
 `;
 }
 
+// ─── xUnit ────────────────────────────────────────────────────────
+
+function xunitCsproj(): string {
+  return `<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="coverlet.collector" Version="6.0.2" />
+  </ItemGroup>
+
+</Project>
+`;
+}
+
+function xunitSampleTest(): string {
+  return `namespace App.Tests;
+
+public class ItemTests
+{
+    [Fact]
+    public void CreateItem_ShouldSetTitle()
+    {
+        var item = new Item { Title = "Test item" };
+        Assert.Equal("Test item", item.Title);
+    }
+
+    [Fact]
+    public void CreateItem_ShouldDefaultToNotCompleted()
+    {
+        var item = new Item { Title = "Test item" };
+        Assert.False(item.Completed);
+    }
+
+    [Fact]
+    public void ToggleItem_ShouldChangeCompletedState()
+    {
+        var item = new Item { Title = "Test item" };
+        item.Completed = !item.Completed;
+        Assert.True(item.Completed);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public void CreateItem_WithInvalidTitle_ShouldBeInvalid(string? title)
+    {
+        var item = new Item { Title = title! };
+        Assert.True(string.IsNullOrEmpty(item.Title));
+    }
+}
+
+public class Item
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public required string Title { get; set; }
+    public bool Completed { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+`;
+}
+
+// ─── Selenium ─────────────────────────────────────────────────────
+
+function seleniumConfig(): string {
+  return `{
+  "webdriver": {
+    "browser": "chrome",
+    "headless": true,
+    "baseUrl": "http://localhost:3000",
+    "implicitWait": 10000,
+    "pageLoadTimeout": 30000
+  }
+}
+`;
+}
+
+function seleniumSampleTest(): string {
+  return `import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome.js';
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+
+describe('Home page', () => {
+  let driver: WebDriver;
+
+  before(async () => {
+    const options = new chrome.Options();
+    options.addArguments('--headless=new');
+    options.addArguments('--no-sandbox');
+    options.addArguments('--disable-dev-shm-usage');
+
+    driver = await new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(options)
+      .build();
+  });
+
+  after(async () => {
+    if (driver) {
+      await driver.quit();
+    }
+  });
+
+  it('should load the main page', async () => {
+    await driver.get('http://localhost:3000');
+    const title = await driver.getTitle();
+    assert.ok(title.length > 0, 'Page should have a title');
+  });
+
+  it('should display a heading', async () => {
+    await driver.get('http://localhost:3000');
+    const heading = await driver.wait(
+      until.elementLocated(By.css('h1')),
+      5000,
+    );
+    const text = await heading.getText();
+    assert.ok(text.length > 0, 'Heading should have text');
+  });
+});
+`;
+}
+
+// ─── Postman ──────────────────────────────────────────────────────
+
+function postmanCollection(ctx: GeneratorContext): string {
+  const name = ctx.selection.name;
+  const collection = {
+    info: {
+      name: `${name} — Items API`,
+      schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+      description: `CRUD requests for the ${name} Items API`,
+    },
+    variable: [
+      { key: 'baseUrl', value: 'http://localhost:3000', type: 'string' },
+      { key: 'itemId', value: '1', type: 'string' },
+    ],
+    item: [
+      {
+        name: 'List items',
+        request: {
+          method: 'GET',
+          url: '{{baseUrl}}/api/items',
+          header: [{ key: 'Accept', value: 'application/json' }],
+        },
+      },
+      {
+        name: 'Get item by ID',
+        request: {
+          method: 'GET',
+          url: '{{baseUrl}}/api/items/{{itemId}}',
+          header: [{ key: 'Accept', value: 'application/json' }],
+        },
+      },
+      {
+        name: 'Create item',
+        request: {
+          method: 'POST',
+          url: '{{baseUrl}}/api/items',
+          header: [
+            { key: 'Content-Type', value: 'application/json' },
+            { key: 'Accept', value: 'application/json' },
+          ],
+          body: {
+            mode: 'raw',
+            raw: JSON.stringify({ title: 'New item', completed: false }, null, 2),
+          },
+        },
+      },
+      {
+        name: 'Update item',
+        request: {
+          method: 'PUT',
+          url: '{{baseUrl}}/api/items/{{itemId}}',
+          header: [
+            { key: 'Content-Type', value: 'application/json' },
+            { key: 'Accept', value: 'application/json' },
+          ],
+          body: {
+            mode: 'raw',
+            raw: JSON.stringify({ title: 'Updated item', completed: true }, null, 2),
+          },
+        },
+      },
+      {
+        name: 'Delete item',
+        request: {
+          method: 'DELETE',
+          url: '{{baseUrl}}/api/items/{{itemId}}',
+          header: [{ key: 'Accept', value: 'application/json' }],
+        },
+      },
+    ],
+  };
+
+  return JSON.stringify(collection, null, 2) + '\n';
+}
+
+// ─── REST Client ──────────────────────────────────────────────────
+
+function restClientFile(): string {
+  return `@baseUrl = http://localhost:3000
+@itemId = 1
+
+### List all items
+GET {{baseUrl}}/api/items
+Accept: application/json
+
+### Get item by ID
+GET {{baseUrl}}/api/items/{{itemId}}
+Accept: application/json
+
+### Create a new item
+POST {{baseUrl}}/api/items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "New item",
+  "completed": false
+}
+
+### Update an item
+PUT {{baseUrl}}/api/items/{{itemId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Updated item",
+  "completed": true
+}
+
+### Delete an item
+DELETE {{baseUrl}}/api/items/{{itemId}}
+Accept: application/json
+`;
+}
+
 // ─── Generator ─────────────────────────────────────────────────────
 
 export function createTestingGenerator(): Generator {
@@ -370,6 +617,12 @@ export function createTestingGenerator(): Generator {
         files.push({ path: 'backend/tests/test_items.py', content: pytestSampleTest(ctx) });
       }
 
+      // ── xUnit ──
+      if (hasTech(ctx, 'xunit')) {
+        files.push({ path: 'backend/tests/App.Tests/App.Tests.csproj', content: xunitCsproj() });
+        files.push({ path: 'backend/tests/App.Tests/ItemTests.cs', content: xunitSampleTest() });
+      }
+
       // ── Playwright ──
       if (hasTech(ctx, 'playwright')) {
         files.push({ path: 'frontend/playwright.config.ts', content: playwrightConfig() });
@@ -386,6 +639,22 @@ export function createTestingGenerator(): Generator {
         files.push({ path: 'frontend/cypress.config.ts', content: cypressConfig() });
         files.push({ path: 'frontend/cypress/e2e/home.cy.ts', content: cypressSampleTest() });
         files.push({ path: 'frontend/cypress/support/e2e.ts', content: cypressSupport() });
+      }
+
+      // ── Selenium ──
+      if (hasTech(ctx, 'selenium')) {
+        files.push({ path: 'frontend/selenium.config.json', content: seleniumConfig() });
+        files.push({ path: 'frontend/e2e/home.selenium.ts', content: seleniumSampleTest() });
+      }
+
+      // ── Postman ──
+      if (hasTech(ctx, 'postman')) {
+        files.push({ path: 'api-tests/items.postman_collection.json', content: postmanCollection(ctx) });
+      }
+
+      // ── REST Client ──
+      if (hasTech(ctx, 'rest-client')) {
+        files.push({ path: 'api-tests/items.http', content: restClientFile() });
       }
 
       return { files, commands };

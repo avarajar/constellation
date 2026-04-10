@@ -1,9 +1,11 @@
 /**
  * Generation pipeline that orchestrates step-by-step project generation.
  */
+import { join } from 'node:path';
 import type {
   GeneratorContext,
   GeneratorResult,
+  PostGenCommand,
   PipelineHook,
   PipelineStep,
   TechCategory,
@@ -19,6 +21,9 @@ const STEP_CATEGORIES: Record<string, TechCategory[]> = {
   'generate-testing': ['testing-unit', 'testing-e2e', 'testing-api'],
   'generate-monitoring': ['observability', 'logging', 'error-tracking'],
 };
+
+const PRE_GENERATE_HOOK = '.constellation/hooks/pre-generate.sh';
+const POST_GENERATE_HOOK = '.constellation/hooks/post-generate.sh';
 
 function emit(hook: PipelineHook | undefined, step: PipelineStep, status: 'start' | 'complete' | 'error', message?: string): void {
   hook?.({ step, status, message });
@@ -44,6 +49,7 @@ export async function runPipeline(
   hooks?: PipelineHook,
 ): Promise<GeneratorResult> {
   const results: GeneratorResult[] = [];
+  const hookCommands: PostGenCommand[] = [];
 
   // 1. Validate
   emit(hooks, 'validate', 'start', 'Validating configuration');
@@ -56,10 +62,15 @@ export async function runPipeline(
     throw err;
   }
 
-  // 2. Prepare
+  // 2. Prepare — also check for pre-generate hook
   emit(hooks, 'prepare', 'start', 'Preparing output directory');
   try {
-    // The engine handles the actual directory creation; pipeline just signals.
+    const preHookPath = join(ctx.outputDir, PRE_GENERATE_HOOK);
+    hookCommands.push({
+      command: `[ -f "${preHookPath}" ] && bash "${preHookPath}" || true`,
+      cwd: ctx.outputDir,
+      description: 'Run pre-generate hook if it exists',
+    });
     emit(hooks, 'prepare', 'complete');
   } catch (err) {
     emit(hooks, 'prepare', 'error', (err as Error).message);
@@ -102,9 +113,19 @@ export async function runPipeline(
     }
   }
 
-  // 10. Finalize
+  // 10. Finalize — also add post-generate hook command
   emit(hooks, 'finalize', 'start', 'Finalizing generation');
   const merged = mergeResults(results);
+
+  const postHookPath = join(ctx.outputDir, POST_GENERATE_HOOK);
+  hookCommands.push({
+    command: `[ -f "${postHookPath}" ] && bash "${postHookPath}" || true`,
+    cwd: ctx.outputDir,
+    description: 'Run post-generate hook if it exists',
+  });
+
+  merged.commands = [...hookCommands, ...(merged.commands ?? [])];
+
   emit(hooks, 'finalize', 'complete', `Generated ${merged.files.length} files`);
 
   return merged;
