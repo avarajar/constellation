@@ -1,7 +1,7 @@
 # Project Instructions
 
 ## Overview
-Constellation is an interactive CLI project generator built with TypeScript. Users select technologies from 80+ options across 6 categories, and it generates a fully functional project with proper configs, dependencies, and structure.
+Constellation is an interactive project generator (CLI + Web UI) built with TypeScript. Users select technologies from 88+ options across 6 categories, and it generates a fully functional project with proper configs, dependencies, CRUD samples, and structure.
 
 ## Architecture
 - **Stack**: TypeScript, Node.js, Commander.js, @inquirer/prompts, Handlebars, js-yaml
@@ -13,6 +13,7 @@ Constellation is an interactive CLI project generator built with TypeScript. Use
   - `src/validators/` — Compatibility rules and validation engine
   - `src/generators/` — Per-category file generators
   - `src/templates/` — Handlebars template engine
+  - `src/web/` — HTTP server + vanilla HTML/CSS/JS web UI
   - `tests/` — Vitest test suite
 
 ## Conventions
@@ -30,6 +31,9 @@ Constellation is an interactive CLI project generator built with TypeScript. Use
 - `npm run build` — Build with tsup
 - `npm run lint` — Lint with ESLint
 - `npm run typecheck` — Type check with tsc
+- `npm run dev -- web` — Start web UI at localhost:3210
+- `npm run dev -- list` — List all registered technologies
+- `npm run dev -- new` — Interactive CLI project generation
 
 ## Integrations
 When I ask you to create an issue, use Linear.
