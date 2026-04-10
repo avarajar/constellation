@@ -1,0 +1,20 @@
+{
+  "name": "constellation",
+  "version": "0.1.0",
+  "description": "Interactive project generator — visual web UI to select your tech stack, then AI-powered generation of fully functional projects",
+  "author": {
+    "name": "Jose Andrade",
+    "url": "https://github.com/avarajar"
+  },
+  "homepage": "https://github.com/avarajar/constellation",
+  "repository": "https://github.com/avarajar/constellation",
+  "license": "MIT",
+  "keywords": [
+    "project-generator",
+    "scaffolding",
+    "tech-stack",
+    "ai-generation",
+    "web-ui",
+    "fullstack"
+  ]
+}

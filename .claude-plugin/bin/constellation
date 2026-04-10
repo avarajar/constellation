@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Constellation CLI wrapper for the Claude Code plugin.
+# Resolves to the project's built CLI or falls back to npx.
+PLUGIN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PROJECT_ROOT="$(cd "$PLUGIN_ROOT/.." && pwd)"
+
+if [ -f "$PROJECT_ROOT/dist/index.js" ]; then
+  exec node "$PROJECT_ROOT/dist/index.js" "$@"
+elif [ -f "$PROJECT_ROOT/src/index.ts" ]; then
+  exec npx tsx "$PROJECT_ROOT/src/index.ts" "$@"
+else
+  exec npx constellation@latest "$@"
+fi
