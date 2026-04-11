@@ -147,6 +147,7 @@ export interface TechRegistry {
   search(query: string): Technology[];
   getCategoryGroups(): TechCategoryGroup[];
   addTechnology(tech: Technology): void;
+  enrichWithVersions(): Promise<void>;
 }
 
 // ─── Template ───────────────────────────────────────────────────────

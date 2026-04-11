@@ -8,6 +8,7 @@ import type {
   TechCategoryGroup,
   TechRegistry,
 } from '../core/types.js';
+import { fetchAllVersions } from './versions.js';
 
 // ─── Category Groups ───────────────────────────────────────────────
 
@@ -171,6 +172,19 @@ class Registry implements TechRegistry {
     // Also persist in the module-level array so future createRegistry() calls include it
     if (!runtimeTechs.some((t) => t.id === tech.id)) {
       runtimeTechs.push(tech);
+    }
+  }
+
+  async enrichWithVersions(): Promise<void> {
+    const versions = await fetchAllVersions(this.technologies);
+    for (const tech of this.technologies) {
+      const fetched = versions.get(tech.id);
+      if (fetched) {
+        tech.version = fetched;
+      }
+      if (!tech.version) {
+        tech.version = 'latest';
+      }
     }
   }
 }

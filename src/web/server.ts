@@ -95,7 +95,7 @@ export function startServer(port: number, options?: ServerOptions): Server {
     try {
       // API routes
       if (pathname === '/api/technologies' && method === 'GET') {
-        handleGetTechnologies(res);
+        await handleGetTechnologies(res);
         return;
       }
 

@@ -35,9 +35,10 @@ function errorResponse(res: ServerResponse, status: number, message: string): vo
 /**
  * GET /api/technologies — all technologies grouped by category group.
  */
-export function handleGetTechnologies(res: ServerResponse): void {
+export async function handleGetTechnologies(res: ServerResponse): Promise<void> {
   try {
     const registry = createRegistry();
+    await registry.enrichWithVersions();
     const groups = registry.getCategoryGroups();
     const allTechs = registry.getAllTechnologies();
 
