@@ -33,7 +33,9 @@ export interface Technology {
   requires?: string[];
   conflicts?: string[];
   tags?: string[];
-  version: string;
+  version?: string;
+  package?: string;
+  ecosystem?: string;
   homepage?: string;
 }
 
@@ -145,6 +147,7 @@ export interface TechRegistry {
   search(query: string): Technology[];
   getCategoryGroups(): TechCategoryGroup[];
   addTechnology(tech: Technology): void;
+  enrichWithVersions(): Promise<void>;
 }
 
 // ─── Template ───────────────────────────────────────────────────────

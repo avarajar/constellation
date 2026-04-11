@@ -2,7 +2,7 @@
  * API route handlers for the Constellation web server.
  */
 import type { ServerResponse } from 'node:http';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readdir } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
@@ -35,9 +35,10 @@ function errorResponse(res: ServerResponse, status: number, message: string): vo
 /**
  * GET /api/technologies — all technologies grouped by category group.
  */
-export function handleGetTechnologies(res: ServerResponse): void {
+export async function handleGetTechnologies(res: ServerResponse): Promise<void> {
   try {
     const registry = createRegistry();
+    await registry.enrichWithVersions();
     const groups = registry.getCategoryGroups();
     const allTechs = registry.getAllTechnologies();
 
@@ -269,6 +270,53 @@ export async function handleCreateBlueprint(
 
     // Notify caller (used by --wait mode to unblock the CLI)
     onSuccess?.(blueprintPath);
+  } catch (err) {
+    errorResponse(res, 500, err instanceof Error ? err.message : String(err));
+  }
+}
+
+// ─── Directory Browsing ──────────────────────────────────────────
+
+const HIDDEN_DIR_PATTERNS = [/^\./, /^node_modules$/, /^__pycache__$/, /^dist$/, /^build$/];
+
+export async function listDirectories(dirPath: string): Promise<{ dirs: string[]; parent: string | null }> {
+  try {
+    const entries = await readdir(dirPath, { withFileTypes: true });
+    const dirs = entries
+      .filter((e) => {
+        if (!e.isDirectory()) return false;
+        return !HIDDEN_DIR_PATTERNS.some((p) => p.test(e.name));
+      })
+      .map((e) => e.name)
+      .sort();
+
+    const parentPath = dirname(dirPath);
+    const parent = parentPath !== dirPath ? parentPath : null;
+    return { dirs, parent };
+  } catch {
+    return { dirs: [], parent: null };
+  }
+}
+
+export async function handleBrowseDirs(path: string, res: ServerResponse): Promise<void> {
+  const dirPath = path || homedir();
+  const result = await listDirectories(dirPath);
+  json(res, 200, result);
+}
+
+export async function handleCreateDir(body: unknown, res: ServerResponse): Promise<void> {
+  try {
+    if (!body || typeof body !== 'object') {
+      errorResponse(res, 400, 'Request body must include a "path" string.');
+      return;
+    }
+    const { path: dirPath } = body as { path: string };
+    if (!dirPath) {
+      errorResponse(res, 400, '"path" is required.');
+      return;
+    }
+    await mkdir(dirPath, { recursive: true });
+    json(res, 200, { success: true, path: dirPath });
   } catch (err) {
     errorResponse(res, 500, err instanceof Error ? err.message : String(err));
   }

@@ -9,6 +9,7 @@ technologies:
     conflicts: ["vue", "svelte", "angular", "solid", "qwik"]
     tags: ["ui", "spa", "component"]
     version: "19.0.0"
+    package: "react"
     homepage: "https://react.dev"
 
   - id: "vue"
@@ -20,6 +21,7 @@ technologies:
     conflicts: ["react", "svelte", "angular", "solid", "qwik"]
     tags: ["ui", "spa", "component", "progressive"]
     version: "3.5.0"
+    package: "vue"
     homepage: "https://vuejs.org"
 
   - id: "svelte"
@@ -31,6 +33,7 @@ technologies:
     conflicts: ["react", "vue", "angular", "solid", "qwik"]
     tags: ["ui", "spa", "compiler", "component"]
     version: "5.0.0"
+    package: "svelte"
     homepage: "https://svelte.dev"
 
   - id: "nextjs"
@@ -42,6 +45,7 @@ technologies:
     conflicts: ["nuxt", "astro"]
     tags: ["ssr", "ssg", "fullstack", "meta-framework"]
     version: "15.0.0"
+    package: "next"
     homepage: "https://nextjs.org"
 
   - id: "nuxt"
@@ -53,6 +57,7 @@ technologies:
     conflicts: ["nextjs", "astro"]
     tags: ["ssr", "ssg", "fullstack", "meta-framework"]
     version: "3.14.0"
+    package: "nuxt"
     homepage: "https://nuxt.com"
 
   - id: "astro"
@@ -64,6 +69,7 @@ technologies:
     conflicts: ["nextjs", "nuxt"]
     tags: ["ssg", "islands", "content", "mpa"]
     version: "5.0.0"
+    package: "astro"
     homepage: "https://astro.build"
 
   - id: "angular"
@@ -75,6 +81,7 @@ technologies:
     conflicts: ["react", "vue", "svelte", "solid", "qwik"]
     tags: ["ui", "spa", "enterprise", "component"]
     version: "19.0.0"
+    package: "@angular/core"
     homepage: "https://angular.dev"
 
   - id: "solid"
@@ -86,6 +93,7 @@ technologies:
     conflicts: ["react", "vue", "svelte", "angular", "qwik"]
     tags: ["ui", "spa", "reactive", "fine-grained"]
     version: "1.9.0"
+    package: "solid-js"
     homepage: "https://www.solidjs.com"
 
   - id: "qwik"
@@ -97,6 +105,7 @@ technologies:
     conflicts: ["react", "vue", "svelte", "angular", "solid"]
     tags: ["ui", "resumable", "lazy-loading"]
     version: "1.12.0"
+    package: "@builder.io/qwik"
     homepage: "https://qwik.dev"
 
   # ── CSS ─────────────────────────────────────────────────────────────
@@ -109,6 +118,7 @@ technologies:
     conflicts: []
     tags: ["css", "utility", "responsive"]
     version: "4.0.0"
+    package: "tailwindcss"
     homepage: "https://tailwindcss.com"
 
   - id: "styled-components"
@@ -120,6 +130,7 @@ technologies:
     conflicts: []
     tags: ["css", "css-in-js", "component"]
     version: "6.1.0"
+    package: "styled-components"
     homepage: "https://styled-components.com"
 
   - id: "css-modules"
@@ -131,6 +142,7 @@ technologies:
     conflicts: []
     tags: ["css", "scoped", "modular"]
     version: "1.0.0"
+    ecosystem: "none"
     homepage: "https://github.com/css-modules/css-modules"
 
   - id: "sass"
@@ -142,6 +154,7 @@ technologies:
     conflicts: []
     tags: ["css", "preprocessor", "variables", "nesting"]
     version: "1.80.0"
+    package: "sass"
     homepage: "https://sass-lang.com"
 
   - id: "postcss"
@@ -153,6 +166,7 @@ technologies:
     conflicts: []
     tags: ["css", "plugins", "transform"]
     version: "8.5.0"
+    package: "postcss"
     homepage: "https://postcss.org"
 
   # ── Build Tools ─────────────────────────────────────────────────────
@@ -165,6 +179,7 @@ technologies:
     conflicts: ["webpack"]
     tags: ["bundler", "hmr", "esm", "fast"]
     version: "6.0.0"
+    package: "vite"
     homepage: "https://vite.dev"
 
   - id: "webpack"
@@ -176,6 +191,7 @@ technologies:
     conflicts: ["vite"]
     tags: ["bundler", "module", "loaders"]
     version: "5.97.0"
+    package: "webpack"
     homepage: "https://webpack.js.org"
 
   - id: "turbopack"
@@ -187,6 +203,7 @@ technologies:
     conflicts: ["vite", "webpack"]
     tags: ["bundler", "incremental", "rust"]
     version: "2.0.0"
+    ecosystem: "none"
     homepage: "https://turbo.build/pack"
 
   - id: "esbuild"
@@ -198,6 +215,7 @@ technologies:
     conflicts: []
     tags: ["bundler", "minifier", "fast", "go"]
     version: "0.24.0"
+    package: "esbuild"
     homepage: "https://esbuild.github.io"
 
   # ── State Management ────────────────────────────────────────────────
@@ -210,6 +228,7 @@ technologies:
     conflicts: ["vuex", "pinia"]
     tags: ["state", "flux", "predictable"]
     version: "5.0.0"
+    package: "@reduxjs/toolkit"
     homepage: "https://redux.js.org"
 
   - id: "zustand"
@@ -221,6 +240,7 @@ technologies:
     conflicts: ["vuex", "pinia"]
     tags: ["state", "hooks", "minimal"]
     version: "5.0.0"
+    package: "zustand"
     homepage: "https://zustand.docs.pmnd.rs"
 
   - id: "jotai"
@@ -232,6 +252,7 @@ technologies:
     conflicts: ["vuex", "pinia"]
     tags: ["state", "atomic", "minimal"]
     version: "2.11.0"
+    package: "jotai"
     homepage: "https://jotai.org"
 
   - id: "recoil"
@@ -243,6 +264,7 @@ technologies:
     conflicts: ["vuex", "pinia"]
     tags: ["state", "atomic", "graph"]
     version: "0.7.7"
+    package: "recoil"
     homepage: "https://recoiljs.org"
 
   - id: "pinia"
@@ -254,6 +276,7 @@ technologies:
     conflicts: ["redux", "zustand", "jotai", "recoil", "vuex"]
     tags: ["state", "vue", "composition-api"]
     version: "2.3.0"
+    package: "pinia"
     homepage: "https://pinia.vuejs.org"
 
   - id: "vuex"
@@ -265,4 +288,5 @@ technologies:
     conflicts: ["redux", "zustand", "jotai", "recoil", "pinia"]
     tags: ["state", "vue", "centralized"]
     version: "4.1.0"
+    package: "vuex"
     homepage: "https://vuex.vuejs.org"

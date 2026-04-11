@@ -188,6 +188,140 @@ const debouncedValidate = debounce(async () => {
   renderValidationBadges();
 }, 300);
 
+// ── Directory Autocomplete ────────────────────────────────
+async function fetchDirs(path) {
+  try {
+    const data = await api('GET', '/api/browse-dirs?path=' + encodeURIComponent(path));
+    return data;
+  } catch {
+    return { dirs: [], parent: null };
+  }
+}
+
+const debouncedDirAutocomplete = debounce(async (inputEl) => {
+  const val = inputEl.value.trim();
+  if (!val || val.length < 2) {
+    hideDirAutocomplete();
+    return;
+  }
+
+  const lastSlash = val.lastIndexOf('/');
+  const parentPath = lastSlash > 0 ? val.substring(0, lastSlash) : '/';
+  const partial = lastSlash >= 0 ? val.substring(lastSlash + 1).toLowerCase() : val.toLowerCase();
+
+  const data = await fetchDirs(parentPath);
+  const matches = data.dirs.filter(d => d.toLowerCase().startsWith(partial));
+
+  const dropdown = document.getElementById('dirAutocomplete');
+  if (!dropdown || matches.length === 0) {
+    hideDirAutocomplete();
+    return;
+  }
+
+  dropdown.innerHTML = matches.map(d =>
+    `<div class="dir-autocomplete-item" data-path="${escHtml(parentPath + '/' + d)}">${escHtml(d)}/</div>`
+  ).join('');
+  dropdown.classList.remove('hidden');
+}, 300);
+
+function hideDirAutocomplete() {
+  const dropdown = document.getElementById('dirAutocomplete');
+  if (dropdown) dropdown.classList.add('hidden');
+}
+
+// ── Browse Directory Modal ────────────────────────────────
+function openBrowseModal(currentPath, onSelect) {
+  const existing = document.querySelector('.browse-modal');
+  if (existing) existing.remove();
+
+  let browsePath = currentPath || state.homeDir + '/projects';
+
+  const modal = cloneTemplate('tpl-browse-modal');
+  document.body.appendChild(modal);
+
+  const breadcrumbEl = $('#browseBreadcrumb', modal);
+  const listEl = $('#browseDirsList', modal);
+  const closeBtn = $('.browse-modal-close', modal);
+  const selectBtn = $('#btnSelectFolder', modal);
+  const newFolderBtn = $('#btnNewFolder', modal);
+
+  async function navigate(path) {
+    browsePath = path;
+    const data = await fetchDirs(path);
+    renderBreadcrumb(path);
+    renderDirList(data);
+  }
+
+  function renderBreadcrumb(path) {
+    const parts = path.split('/').filter(Boolean);
+    let html = '<span class="browse-crumb" data-path="/">/</span>';
+    let accumulated = '';
+    for (const part of parts) {
+      accumulated += '/' + part;
+      html += ` <span class="browse-crumb-sep">/</span> <span class="browse-crumb" data-path="${escHtml(accumulated)}">${escHtml(part)}</span>`;
+    }
+    breadcrumbEl.innerHTML = html;
+  }
+
+  function renderDirList(data) {
+    if (data.parent) {
+      listEl.innerHTML = `<div class="browse-dir-item browse-dir-parent" data-path="${escHtml(data.parent)}">&#11014; ..</div>`;
+    } else {
+      listEl.innerHTML = '';
+    }
+
+    if (data.dirs.length === 0) {
+      listEl.innerHTML += '<div class="browse-dir-empty">No subdirectories</div>';
+      return;
+    }
+
+    for (const dir of data.dirs) {
+      const fullPath = browsePath.replace(/\/$/, '') + '/' + dir;
+      listEl.innerHTML += `<div class="browse-dir-item" data-path="${escHtml(fullPath)}">&#128193; ${escHtml(dir)}</div>`;
+    }
+  }
+
+  // Events
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+
+    const crumb = e.target.closest('.browse-crumb');
+    if (crumb) navigate(crumb.dataset.path);
+
+    const dirItem = e.target.closest('.browse-dir-item');
+    if (dirItem) navigate(dirItem.dataset.path);
+  });
+
+  closeBtn.addEventListener('click', () => modal.remove());
+
+  selectBtn.addEventListener('click', () => {
+    onSelect(browsePath);
+    modal.remove();
+  });
+
+  newFolderBtn.addEventListener('click', async () => {
+    const name = prompt('New folder name:');
+    if (!name || !name.trim()) return;
+    const newPath = browsePath.replace(/\/$/, '') + '/' + name.trim();
+    try {
+      await api('POST', '/api/create-dir', { path: newPath });
+      navigate(browsePath);
+      toast('Folder created: ' + name.trim(), 'success');
+    } catch (err) {
+      toast('Failed to create folder: ' + err.message, 'error');
+    }
+  });
+
+  document.addEventListener('keydown', function onKey(e) {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', onKey);
+    }
+  });
+
+  navigate(browsePath);
+}
+
 function getDefaultOutputDir(name) {
   const base = state.homeDir ? state.homeDir + '/projects' : '/tmp/projects';
   return name ? base + '/' + name : base;
@@ -280,26 +414,60 @@ function renderStep1() {
   }
   updateResolvedPath();
 
+  // Directory autocomplete
+  dirInput.addEventListener('input', () => {
+    debouncedDirAutocomplete(dirInput);
+  });
+
+  dirInput.addEventListener('keydown', (e) => {
+    const dropdown = document.getElementById('dirAutocomplete');
+    if (e.key === 'Escape') {
+      hideDirAutocomplete();
+    }
+    if (e.key === 'Tab' && dropdown && !dropdown.classList.contains('hidden')) {
+      e.preventDefault();
+      const first = dropdown.querySelector('.dir-autocomplete-item');
+      if (first) {
+        dirInput.value = first.dataset.path + '/';
+        state.project.outputDir = dirInput.value;
+        updateResolvedPath();
+        hideDirAutocomplete();
+        debouncedDirAutocomplete(dirInput);
+      }
+    }
+  });
+
+  // Autocomplete item click
+  section.addEventListener('click', (e) => {
+    const item = e.target.closest('.dir-autocomplete-item');
+    if (item) {
+      dirInput.value = item.dataset.path + '/';
+      state.project.outputDir = dirInput.value;
+      updateResolvedPath();
+      hideDirAutocomplete();
+      debouncedDirAutocomplete(dirInput);
+      return; // prevent other click handlers
+    }
+  });
+
+  // Browse button
+  const browseBtn = $('#btnBrowse', section);
+  if (browseBtn) {
+    browseBtn.addEventListener('click', () => {
+      const startPath = dirInput.value || getDefaultOutputDir(state.project.name || 'my-app');
+      openBrowseModal(startPath, (selectedPath) => {
+        dirInput.value = selectedPath;
+        state.project.outputDir = selectedPath;
+        updateResolvedPath();
+      });
+    });
+  }
+
   // Mode toggle
   $$('[data-mode]', section).forEach(btn => {
     btn.classList.toggle('active', btn.dataset.mode === state.project.mode);
     btn.setAttribute('aria-checked', btn.dataset.mode === state.project.mode);
   });
-
-  // Monorepo toggle
-  $$('[data-monorepo]', section).forEach(btn => {
-    const val = btn.dataset.monorepo === 'true';
-    btn.classList.toggle('active', val === state.project.monorepo.enabled);
-  });
-
-  // Monorepo tool
-  const toolField = $('.monorepo-tool-field', section);
-  if (state.project.monorepo.enabled) toolField.classList.remove('hidden');
-  if (state.project.monorepo.tool) {
-    $$('[data-monorepo-tool]', section).forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.monorepoTool === state.project.monorepo.tool);
-    });
-  }
 
   // ── GitHub section ──
   const githubNewField = $('#githubNewField', section);
@@ -439,21 +607,6 @@ function renderStep1() {
       });
     }
 
-    if (btn.dataset.monorepo !== undefined) {
-      state.project.monorepo.enabled = btn.dataset.monorepo === 'true';
-      $$('[data-monorepo]', section).forEach(b => {
-        b.classList.toggle('active', (b.dataset.monorepo === 'true') === state.project.monorepo.enabled);
-      });
-      toolField.classList.toggle('hidden', !state.project.monorepo.enabled);
-    }
-
-    if (btn.dataset.monorepoTool) {
-      state.project.monorepo.tool = btn.dataset.monorepoTool;
-      $$('[data-monorepo-tool]', section).forEach(b => {
-        b.classList.toggle('active', b.dataset.monorepoTool === state.project.monorepo.tool);
-      });
-    }
-
     // GitHub mode toggle
     if (btn.dataset.github) {
       state.github.mode = btn.dataset.github;
@@ -501,6 +654,20 @@ function renderStep1() {
 }
 
 // ── Step 2: Technology Selection ───────────────────────────
+function hasFrontendAndBackend() {
+  const frontendCats = new Set(['frontend', 'css', 'build', 'state']);
+  const backendCats = new Set(['backend']);
+  let hasFE = false;
+  let hasBE = false;
+  for (const tech of state.technologies) {
+    if (state.selected.has(tech.id)) {
+      if (frontendCats.has(tech.category)) hasFE = true;
+      if (backendCats.has(tech.category)) hasBE = true;
+    }
+  }
+  return hasFE && hasBE;
+}
+
 function renderStep2() {
   const section = cloneTemplate('tpl-step2');
   app.appendChild(section);
@@ -532,6 +699,7 @@ function renderStep2() {
       toggleTech(card.dataset.techId);
       renderTechGrid(section);
       updateGroupCounts(section);
+      updateWorkspaceVisibility();
       return;
     }
 
@@ -558,6 +726,42 @@ function renderStep2() {
       toggleTech(card.dataset.techId);
       renderTechGrid(section);
       updateGroupCounts(section);
+    }
+  });
+
+  // Workspace section — show/hide based on selection
+  function updateWorkspaceVisibility() {
+    const ws = $('#workspaceSection', section);
+    if (!ws) return;
+    if (hasFrontendAndBackend()) {
+      ws.classList.remove('hidden');
+    } else {
+      ws.classList.add('hidden');
+      state.project.monorepo.enabled = false;
+      state.project.monorepo.tool = null;
+    }
+  }
+  updateWorkspaceVisibility();
+
+  // Workspace toggle events
+  section.addEventListener('click', (e) => {
+    const wsBtn = e.target.closest('[data-workspace]');
+    if (wsBtn) {
+      state.project.monorepo.enabled = wsBtn.dataset.workspace === 'true';
+      $$('[data-workspace]', section).forEach(b => {
+        b.classList.toggle('active', (b.dataset.workspace === 'true') === state.project.monorepo.enabled);
+        b.setAttribute('aria-checked', (b.dataset.workspace === 'true') === state.project.monorepo.enabled);
+      });
+      const toolField = $('#workspaceToolField', section);
+      if (toolField) toolField.classList.toggle('hidden', !state.project.monorepo.enabled);
+    }
+
+    const toolBtn = e.target.closest('[data-workspace-tool]');
+    if (toolBtn) {
+      state.project.monorepo.tool = toolBtn.dataset.workspaceTool;
+      $$('[data-workspace-tool]', section).forEach(b => {
+        b.classList.toggle('active', b.dataset.workspaceTool === state.project.monorepo.tool);
+      });
     }
   });
 }
@@ -1208,5 +1412,12 @@ async function init() {
 
   render();
 }
+
+// Hide directory autocomplete on outside click (attached once globally)
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.output-dir-input-wrapper')) {
+    hideDirAutocomplete();
+  }
+});
 
 document.addEventListener('DOMContentLoaded', init);

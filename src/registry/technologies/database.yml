@@ -8,6 +8,7 @@ technologies:
     conflicts: []
     tags: ["sql", "relational", "acid", "extensible"]
     version: "17.0"
+    ecosystem: "none"
     homepage: "https://www.postgresql.org"
 
   - id: "mysql"
@@ -18,6 +19,7 @@ technologies:
     conflicts: ["mariadb"]
     tags: ["sql", "relational", "acid"]
     version: "9.1.0"
+    ecosystem: "none"
     homepage: "https://www.mysql.com"
 
   - id: "mariadb"
@@ -28,6 +30,7 @@ technologies:
     conflicts: ["mysql"]
     tags: ["sql", "relational", "acid", "mysql-compatible"]
     version: "11.6.0"
+    ecosystem: "none"
     homepage: "https://mariadb.org"
 
   # ── NoSQL ───────────────────────────────────────────────────────────
@@ -39,6 +42,7 @@ technologies:
     conflicts: []
     tags: ["nosql", "document", "flexible-schema"]
     version: "8.0.0"
+    ecosystem: "none"
     homepage: "https://www.mongodb.com"
 
   - id: "dynamodb"
@@ -49,6 +53,7 @@ technologies:
     conflicts: []
     tags: ["nosql", "key-value", "serverless", "aws"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://aws.amazon.com/dynamodb"
 
   - id: "firestore"
@@ -59,6 +64,7 @@ technologies:
     conflicts: []
     tags: ["nosql", "document", "realtime", "gcp"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://firebase.google.com/docs/firestore"
 
   # ── Cache ───────────────────────────────────────────────────────────
@@ -70,6 +76,7 @@ technologies:
     conflicts: []
     tags: ["cache", "in-memory", "pub-sub", "fast"]
     version: "7.4.0"
+    ecosystem: "none"
     homepage: "https://redis.io"
 
   - id: "memcached"
@@ -80,6 +87,7 @@ technologies:
     conflicts: []
     tags: ["cache", "in-memory", "distributed", "simple"]
     version: "1.6.32"
+    ecosystem: "none"
     homepage: "https://memcached.org"
 
   # ── ORM / Query Builders ───────────────────────────────────────────
@@ -92,6 +100,7 @@ technologies:
     conflicts: []
     tags: ["orm", "typesafe", "migration", "node"]
     version: "6.2.0"
+    package: "prisma"
     homepage: "https://www.prisma.io"
 
   - id: "typeorm"
@@ -103,6 +112,7 @@ technologies:
     conflicts: []
     tags: ["orm", "decorator", "migration", "node"]
     version: "0.3.20"
+    package: "typeorm"
     homepage: "https://typeorm.io"
 
   - id: "sequelize"
@@ -114,6 +124,7 @@ technologies:
     conflicts: []
     tags: ["orm", "promise", "migration", "node"]
     version: "6.37.0"
+    package: "sequelize"
     homepage: "https://sequelize.org"
 
   - id: "sqlalchemy"
@@ -125,6 +136,7 @@ technologies:
     conflicts: []
     tags: ["orm", "python", "migration", "toolkit"]
     version: "2.0.36"
+    package: "sqlalchemy"
     homepage: "https://www.sqlalchemy.org"
 
   - id: "entity-framework"
@@ -136,4 +148,6 @@ technologies:
     conflicts: []
     tags: ["orm", "dotnet", "migration", "linq"]
     version: "9.0.0"
+    package: "Microsoft.EntityFrameworkCore"
+    ecosystem: "nuget"
     homepage: "https://learn.microsoft.com/ef"

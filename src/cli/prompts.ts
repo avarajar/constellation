@@ -49,24 +49,6 @@ export async function runInteractivePrompts(registry: TechRegistry): Promise<Pro
     ],
   });
 
-  // ── Monorepo ────────────────────────────────────────────────────────
-  const monorepoEnabled = await confirm({
-    message: 'Set up as a monorepo?',
-    default: false,
-  });
-
-  let monorepoTool: 'turborepo' | 'nx' | 'none' | undefined;
-  if (monorepoEnabled) {
-    monorepoTool = await select<'turborepo' | 'nx' | 'none'>({
-      message: 'Monorepo tool:',
-      choices: [
-        { name: 'Turborepo', value: 'turborepo', description: 'High-performance build system by Vercel' },
-        { name: 'Nx', value: 'nx', description: 'Smart, fast, extensible build system' },
-        { name: 'None (manual)', value: 'none', description: 'Workspace setup without a dedicated tool' },
-      ],
-    });
-  }
-
   // ── Technology selection ────────────────────────────────────────────
   console.log(chalk.bold('\n  Technology Stack\n'));
 
@@ -120,6 +102,33 @@ export async function runInteractivePrompts(registry: TechRegistry): Promise<Pro
     // Show running count
     if (selectedTechs.length > 0) {
       console.log(chalk.dim(`  ${selectedTechs.length} technologies selected so far.\n`));
+    }
+  }
+
+  // ── Workspace tooling (only if both frontend and backend selected) ──
+  const frontendCats = new Set<string>(['frontend', 'css', 'build', 'state']);
+  const backendCats = new Set<string>(['backend']);
+  const hasFE = selectedTechs.some((t) => frontendCats.has(t.category));
+  const hasBE = selectedTechs.some((t) => backendCats.has(t.category));
+
+  let monorepoEnabled = false;
+  let monorepoTool: 'turborepo' | 'nx' | 'none' | undefined;
+
+  if (hasFE && hasBE) {
+    monorepoEnabled = await confirm({
+      message: 'Add workspace tooling? (Turborepo/Nx to orchestrate frontend + backend builds)',
+      default: false,
+    });
+
+    if (monorepoEnabled) {
+      monorepoTool = await select<'turborepo' | 'nx' | 'none'>({
+        message: 'Workspace tool:',
+        choices: [
+          { name: 'Turborepo', value: 'turborepo', description: 'High-performance build system by Vercel' },
+          { name: 'Nx', value: 'nx', description: 'Smart, fast, extensible build system' },
+          { name: 'None (manual)', value: 'none', description: 'Workspace setup without a dedicated tool' },
+        ],
+      });
     }
   }
 

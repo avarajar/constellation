@@ -9,6 +9,7 @@ technologies:
     conflicts: ["vitest"]
     tags: ["unit", "snapshot", "mocking", "node"]
     version: "30.0.0"
+    package: "jest"
     homepage: "https://jestjs.io"
 
   - id: "vitest"
@@ -20,6 +21,7 @@ technologies:
     conflicts: ["jest"]
     tags: ["unit", "vite", "fast", "node"]
     version: "3.0.0"
+    package: "vitest"
     homepage: "https://vitest.dev"
 
   - id: "pytest"
@@ -31,6 +33,7 @@ technologies:
     conflicts: []
     tags: ["unit", "python", "fixtures", "plugins"]
     version: "8.3.0"
+    package: "pytest"
     homepage: "https://docs.pytest.org"
 
   - id: "xunit"
@@ -42,6 +45,8 @@ technologies:
     conflicts: []
     tags: ["unit", "dotnet", "csharp"]
     version: "2.9.0"
+    package: "xunit"
+    ecosystem: "nuget"
     homepage: "https://xunit.net"
 
   # ── E2E Testing ─────────────────────────────────────────────────────
@@ -54,6 +59,7 @@ technologies:
     conflicts: []
     tags: ["e2e", "browser", "component", "visual"]
     version: "13.17.0"
+    package: "cypress"
     homepage: "https://www.cypress.io"
 
   - id: "playwright"
@@ -65,6 +71,7 @@ technologies:
     conflicts: []
     tags: ["e2e", "browser", "cross-browser", "auto-wait"]
     version: "1.49.0"
+    package: "@playwright/test"
     homepage: "https://playwright.dev"
 
   - id: "selenium"
@@ -75,6 +82,7 @@ technologies:
     conflicts: []
     tags: ["e2e", "browser", "cross-platform", "webdriver"]
     version: "4.27.0"
+    ecosystem: "none"
     homepage: "https://www.selenium.dev"
 
   # ── API Testing ─────────────────────────────────────────────────────
@@ -86,6 +94,7 @@ technologies:
     conflicts: []
     tags: ["api", "collections", "automation", "newman"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://www.postman.com"
 
   - id: "rest-client"
@@ -96,6 +105,7 @@ technologies:
     conflicts: []
     tags: ["api", "http", "vscode", "lightweight"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://marketplace.visualstudio.com/items?itemName=humao.rest-client"
 
   - id: "thunder-client"
@@ -104,5 +114,6 @@ technologies:
     description: "Lightweight REST API client extension for VS Code"
     language: "json"
     version: "2.30.0"
+    ecosystem: "none"
     tags: ["api", "rest", "vscode"]
     homepage: "https://www.thunderclient.com"

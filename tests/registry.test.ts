@@ -22,7 +22,6 @@ describe('Registry', () => {
         expect(tech.name).toBeTruthy();
         expect(tech.category).toBeTruthy();
         expect(tech.description).toBeTruthy();
-        expect(tech.version).toBeTruthy();
       }
     });
 

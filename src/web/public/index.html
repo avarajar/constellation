@@ -67,7 +67,13 @@
 
         <div class="field">
           <label for="outputDir">Output Directory</label>
-          <input type="text" id="outputDir" placeholder="/Users/joselito/projects/my-awesome-app">
+          <div class="output-dir-row">
+            <div class="output-dir-input-wrapper">
+              <input type="text" id="outputDir" placeholder="/Users/joselito/projects/my-awesome-app" autocomplete="off">
+              <div class="dir-autocomplete hidden" id="dirAutocomplete"></div>
+            </div>
+            <button type="button" class="btn btn-ghost btn-browse" id="btnBrowse">Browse</button>
+          </div>
           <span class="field-hint" id="outputDirHint">Where the project will be generated.</span>
           <span class="field-resolved-path" id="resolvedPath"></span>
         </div>
@@ -77,23 +83,6 @@
           <div class="toggle-group" role="radiogroup" aria-label="Project mode">
             <button class="toggle-btn active" data-mode="new" role="radio" aria-checked="true">New Project</button>
             <button class="toggle-btn" data-mode="integrate" role="radio" aria-checked="false">Integrate into Existing</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Monorepo</label>
-          <div class="toggle-group" role="radiogroup" aria-label="Monorepo toggle">
-            <button class="toggle-btn" data-monorepo="false" role="radio" aria-checked="true">No</button>
-            <button class="toggle-btn" data-monorepo="true" role="radio" aria-checked="false">Yes</button>
-          </div>
-        </div>
-
-        <div class="field monorepo-tool-field hidden">
-          <label for="monorepoTool">Monorepo Tool</label>
-          <div class="toggle-group" role="radiogroup" aria-label="Monorepo tool">
-            <button class="toggle-btn" data-monorepo-tool="turborepo" role="radio" aria-checked="false">Turborepo</button>
-            <button class="toggle-btn" data-monorepo-tool="nx" role="radio" aria-checked="false">Nx</button>
-            <button class="toggle-btn" data-monorepo-tool="none" role="radio" aria-checked="false">None</button>
           </div>
         </div>
 
@@ -166,6 +155,29 @@
         </div>
       </div>
 
+      <!-- Workspace Tooling (shown conditionally) -->
+      <div class="workspace-section hidden" id="workspaceSection">
+        <h3 class="workspace-title">Project Structure</h3>
+        <p class="workspace-hint">You selected both frontend and backend. Add workspace tooling to orchestrate builds across packages?</p>
+
+        <div class="field">
+          <label>Workspace Tooling</label>
+          <div class="toggle-group" role="radiogroup" aria-label="Workspace tooling toggle">
+            <button class="toggle-btn active" data-workspace="false" role="radio" aria-checked="true">No</button>
+            <button class="toggle-btn" data-workspace="true" role="radio" aria-checked="false">Yes</button>
+          </div>
+        </div>
+
+        <div class="field workspace-tool-field hidden" id="workspaceToolField">
+          <label>Tool</label>
+          <div class="toggle-group" role="radiogroup" aria-label="Workspace tool">
+            <button class="toggle-btn" data-workspace-tool="turborepo" role="radio" aria-checked="false">Turborepo</button>
+            <button class="toggle-btn" data-workspace-tool="nx" role="radio" aria-checked="false">Nx</button>
+            <button class="toggle-btn" data-workspace-tool="none" role="radio" aria-checked="false">None (manual)</button>
+          </div>
+        </div>
+      </div>
+
       <div class="step-actions">
         <button class="btn btn-ghost btn-prev" data-dir="prev">
           <span class="btn-arrow">&larr;</span> Back
@@ -222,6 +234,24 @@
         </div>
       </div>
     </section>
+  </template>
+
+  <!-- Browse Directory Modal -->
+  <template id="tpl-browse-modal">
+    <div class="browse-modal">
+      <div class="browse-modal-content">
+        <div class="browse-modal-header">
+          <h3>Choose Directory</h3>
+          <button class="browse-modal-close">&times;</button>
+        </div>
+        <div class="browse-breadcrumb" id="browseBreadcrumb"></div>
+        <div class="browse-dirs-list" id="browseDirsList"></div>
+        <div class="browse-modal-footer">
+          <button class="btn btn-ghost btn-new-folder" id="btnNewFolder">New Folder</button>
+          <button class="btn btn-primary btn-select-folder" id="btnSelectFolder">Select This Folder</button>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script src="app.js"></script>

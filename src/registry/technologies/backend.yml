@@ -9,6 +9,7 @@ technologies:
     conflicts: []
     tags: ["node", "http", "middleware", "rest"]
     version: "5.0.0"
+    package: "express"
     homepage: "https://expressjs.com"
 
   - id: "fastify"
@@ -20,6 +21,7 @@ technologies:
     conflicts: []
     tags: ["node", "http", "performance", "schema"]
     version: "5.2.0"
+    package: "fastify"
     homepage: "https://fastify.dev"
 
   - id: "nestjs"
@@ -31,6 +33,7 @@ technologies:
     conflicts: []
     tags: ["node", "enterprise", "decorator", "di"]
     version: "11.0.0"
+    package: "@nestjs/core"
     homepage: "https://nestjs.com"
 
   - id: "hono"
@@ -42,6 +45,7 @@ technologies:
     conflicts: []
     tags: ["node", "edge", "lightweight", "multi-runtime"]
     version: "4.7.0"
+    package: "hono"
     homepage: "https://hono.dev"
 
   - id: "elysia"
@@ -53,6 +57,7 @@ technologies:
     conflicts: []
     tags: ["bun", "http", "typesafe", "performance"]
     version: "1.2.0"
+    package: "elysia"
     homepage: "https://elysiajs.com"
 
   # ── Python ──────────────────────────────────────────────────────────
@@ -65,6 +70,7 @@ technologies:
     conflicts: []
     tags: ["python", "async", "openapi", "pydantic"]
     version: "0.115.0"
+    package: "fastapi"
     homepage: "https://fastapi.tiangolo.com"
 
   - id: "django"
@@ -76,6 +82,7 @@ technologies:
     conflicts: []
     tags: ["python", "batteries-included", "orm", "admin"]
     version: "5.1.0"
+    package: "django"
     homepage: "https://www.djangoproject.com"
 
   - id: "flask"
@@ -87,6 +94,7 @@ technologies:
     conflicts: []
     tags: ["python", "micro", "wsgi", "flexible"]
     version: "3.1.0"
+    package: "flask"
     homepage: "https://flask.palletsprojects.com"
 
   - id: "starlette"
@@ -98,6 +106,7 @@ technologies:
     conflicts: []
     tags: ["python", "async", "asgi", "lightweight"]
     version: "0.41.0"
+    package: "starlette"
     homepage: "https://www.starlette.io"
 
   # ── Go ──────────────────────────────────────────────────────────────
@@ -110,6 +119,8 @@ technologies:
     conflicts: []
     tags: ["go", "http", "performance", "middleware"]
     version: "1.10.0"
+    package: "github.com/gin-gonic/gin"
+    ecosystem: "go"
     homepage: "https://gin-gonic.com"
 
   - id: "echo"
@@ -121,6 +132,8 @@ technologies:
     conflicts: []
     tags: ["go", "http", "extensible", "middleware"]
     version: "4.13.0"
+    package: "github.com/labstack/echo/v4"
+    ecosystem: "go"
     homepage: "https://echo.labstack.com"
 
   - id: "chi"
@@ -132,6 +145,8 @@ technologies:
     conflicts: []
     tags: ["go", "router", "composable", "stdlib"]
     version: "5.2.0"
+    package: "github.com/go-chi/chi/v5"
+    ecosystem: "go"
     homepage: "https://go-chi.io"
 
   # ── Rust ────────────────────────────────────────────────────────────
@@ -144,6 +159,7 @@ technologies:
     conflicts: []
     tags: ["rust", "http", "actor", "performance"]
     version: "4.9.0"
+    package: "actix-web"
     homepage: "https://actix.rs"
 
   - id: "axum"
@@ -155,6 +171,7 @@ technologies:
     conflicts: []
     tags: ["rust", "http", "tower", "tokio"]
     version: "0.8.0"
+    package: "axum"
     homepage: "https://github.com/tokio-rs/axum"
 
   - id: "rocket"
@@ -166,6 +183,7 @@ technologies:
     conflicts: []
     tags: ["rust", "http", "macro", "ergonomic"]
     version: "0.5.1"
+    package: "rocket"
     homepage: "https://rocket.rs"
 
   # ── Java ────────────────────────────────────────────────────────────
@@ -178,6 +196,8 @@ technologies:
     conflicts: []
     tags: ["java", "enterprise", "spring", "di"]
     version: "3.4.0"
+    package: "org.springframework.boot:spring-boot"
+    ecosystem: "maven"
     homepage: "https://spring.io/projects/spring-boot"
 
   - id: "quarkus"
@@ -189,6 +209,8 @@ technologies:
     conflicts: []
     tags: ["java", "cloud-native", "graalvm", "reactive"]
     version: "3.17.0"
+    package: "io.quarkus:quarkus-core"
+    ecosystem: "maven"
     homepage: "https://quarkus.io"
 
   # ── .NET ────────────────────────────────────────────────────────────
@@ -201,4 +223,6 @@ technologies:
     conflicts: []
     tags: ["dotnet", "csharp", "enterprise", "cross-platform"]
     version: "9.0.0"
+    package: "Microsoft.AspNetCore.App"
+    ecosystem: "nuget"
     homepage: "https://dotnet.microsoft.com/apps/aspnet"
