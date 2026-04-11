@@ -77,7 +77,7 @@ export async function fetchPackageVersion(
 interface TechEntry {
   id: string;
   package?: string;
-  ecosystem?: Ecosystem;
+  ecosystem?: string;
   language?: string;
 }
 
@@ -113,9 +113,9 @@ export async function fetchAllVersions(
 
   const results = await Promise.allSettled(
     technologies.map(async (tech) => {
-      const ecosystem = tech.ecosystem ?? inferEcosystem(tech.language);
-      if (!ecosystem || !tech.package) return null;
-      const version = await fetchPackageVersion(tech.package, ecosystem);
+      const eco = (tech.ecosystem as Ecosystem) ?? inferEcosystem(tech.language);
+      if (!eco || eco === ('none' as Ecosystem) || !tech.package) return null;
+      const version = await fetchPackageVersion(tech.package, eco);
       return version ? { id: tech.id, version } : null;
     }),
   );
