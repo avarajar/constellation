@@ -17,6 +17,8 @@ import {
   handleGetHomeDir,
   handleGetGithubOrgs,
   handleGetGithubRepos,
+  handleBrowseDirs,
+  handleCreateDir,
 } from './api.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -131,6 +133,18 @@ export function startServer(port: number, options?: ServerOptions): Server {
       if (pathname === '/api/add-technology' && method === 'POST') {
         const body = await parseBody(req);
         handleAddTechnology(body, res);
+        return;
+      }
+
+      if (pathname === '/api/browse-dirs' && method === 'GET') {
+        const dirPath = url.searchParams.get('path') || '';
+        handleBrowseDirs(dirPath, res);
+        return;
+      }
+
+      if (pathname === '/api/create-dir' && method === 'POST') {
+        const body = await parseBody(req);
+        handleCreateDir(body, res);
         return;
       }
 

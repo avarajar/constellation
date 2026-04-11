@@ -2,6 +2,7 @@
  * API route handlers for the Constellation web server.
  */
 import type { ServerResponse } from 'node:http';
+import { readdirSync, mkdirSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -270,6 +271,52 @@ export async function handleCreateBlueprint(
 
     // Notify caller (used by --wait mode to unblock the CLI)
     onSuccess?.(blueprintPath);
+  } catch (err) {
+    errorResponse(res, 500, err instanceof Error ? err.message : String(err));
+  }
+}
+
+// ─── Directory Browsing ──────────────────────────────────────────
+
+const HIDDEN_DIR_PATTERNS = [/^\./, /^node_modules$/, /^__pycache__$/, /^dist$/, /^build$/];
+
+export function listDirectories(dirPath: string): { dirs: string[]; parent: string | null } {
+  try {
+    const entries = readdirSync(dirPath, { withFileTypes: true });
+    const dirs = entries
+      .filter((e) => {
+        if (!e.isDirectory()) return false;
+        return !HIDDEN_DIR_PATTERNS.some((p) => p.test(e.name));
+      })
+      .map((e) => e.name)
+      .sort();
+
+    const parent = dirname(dirPath) !== dirPath ? dirname(dirPath) : null;
+    return { dirs, parent };
+  } catch {
+    return { dirs: [], parent: null };
+  }
+}
+
+export function handleBrowseDirs(path: string, res: ServerResponse): void {
+  const dirPath = path || homedir();
+  const result = listDirectories(dirPath);
+  json(res, 200, result);
+}
+
+export function handleCreateDir(body: unknown, res: ServerResponse): void {
+  try {
+    if (!body || typeof body !== 'object') {
+      errorResponse(res, 400, 'Request body must include a "path" string.');
+      return;
+    }
+    const { path: dirPath } = body as { path: string };
+    if (!dirPath) {
+      errorResponse(res, 400, '"path" is required.');
+      return;
+    }
+    mkdirSync(dirPath, { recursive: true });
+    json(res, 200, { success: true, path: dirPath });
   } catch (err) {
     errorResponse(res, 500, err instanceof Error ? err.message : String(err));
   }
