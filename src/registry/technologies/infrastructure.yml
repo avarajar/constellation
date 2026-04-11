@@ -8,6 +8,7 @@ technologies:
     conflicts: ["podman"]
     tags: ["container", "image", "devops"]
     version: "27.0.0"
+    ecosystem: "none"
     homepage: "https://www.docker.com"
 
   - id: "podman"
@@ -18,6 +19,7 @@ technologies:
     conflicts: ["docker"]
     tags: ["container", "rootless", "daemonless"]
     version: "5.3.0"
+    ecosystem: "none"
     homepage: "https://podman.io"
 
   # ── Orchestration ───────────────────────────────────────────────────
@@ -29,6 +31,7 @@ technologies:
     conflicts: []
     tags: ["orchestration", "scaling", "cloud-native"]
     version: "1.32.0"
+    ecosystem: "none"
     homepage: "https://kubernetes.io"
 
   - id: "docker-compose"
@@ -39,6 +42,7 @@ technologies:
     conflicts: []
     tags: ["orchestration", "multi-container", "local-dev"]
     version: "2.32.0"
+    ecosystem: "none"
     homepage: "https://docs.docker.com/compose"
 
   # ── Cloud Platforms ─────────────────────────────────────────────────
@@ -50,6 +54,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "iaas", "paas", "serverless"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://aws.amazon.com"
 
   - id: "gcp"
@@ -60,6 +65,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "iaas", "paas", "ml"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://cloud.google.com"
 
   - id: "azure"
@@ -70,6 +76,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "iaas", "paas", "enterprise"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://azure.microsoft.com"
 
   - id: "vercel"
@@ -80,6 +87,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "paas", "frontend", "serverless", "edge"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://vercel.com"
 
   - id: "netlify"
@@ -90,6 +98,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "paas", "jamstack", "serverless"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://www.netlify.com"
 
   - id: "render"
@@ -100,6 +109,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "paas", "managed", "auto-deploy"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://render.com"
 
   - id: "railway"
@@ -110,6 +120,7 @@ technologies:
     conflicts: []
     tags: ["cloud", "paas", "instant", "developer-experience"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://railway.app"
 
   # ── CI/CD ───────────────────────────────────────────────────────────
@@ -121,6 +132,7 @@ technologies:
     conflicts: []
     tags: ["ci", "cd", "automation", "github"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://github.com/features/actions"
 
   - id: "gitlab-ci"
@@ -131,6 +143,7 @@ technologies:
     conflicts: []
     tags: ["ci", "cd", "automation", "gitlab"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://docs.gitlab.com/ee/ci"
 
   - id: "circleci"
@@ -141,6 +154,7 @@ technologies:
     conflicts: []
     tags: ["ci", "cd", "automation", "pipelines"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://circleci.com"
 
   - id: "jenkins"
@@ -151,4 +165,5 @@ technologies:
     conflicts: []
     tags: ["ci", "cd", "automation", "self-hosted"]
     version: "2.479.0"
+    ecosystem: "none"
     homepage: "https://www.jenkins.io"

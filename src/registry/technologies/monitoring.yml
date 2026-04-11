@@ -8,6 +8,7 @@ technologies:
     conflicts: []
     tags: ["apm", "metrics", "dashboards", "saas"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://www.datadoghq.com"
 
   - id: "new-relic"
@@ -18,6 +19,7 @@ technologies:
     conflicts: []
     tags: ["apm", "metrics", "traces", "saas"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://newrelic.com"
 
   - id: "grafana"
@@ -28,6 +30,7 @@ technologies:
     conflicts: []
     tags: ["dashboards", "visualization", "open-source"]
     version: "11.4.0"
+    ecosystem: "none"
     homepage: "https://grafana.com"
 
   - id: "prometheus"
@@ -38,6 +41,7 @@ technologies:
     conflicts: []
     tags: ["metrics", "alerting", "time-series", "open-source"]
     version: "3.1.0"
+    ecosystem: "none"
     homepage: "https://prometheus.io"
 
   # ── Logging ─────────────────────────────────────────────────────────
@@ -49,6 +53,7 @@ technologies:
     conflicts: []
     tags: ["logs", "search", "visualization", "pipeline"]
     version: "8.17.0"
+    ecosystem: "none"
     homepage: "https://www.elastic.co/elastic-stack"
 
   - id: "loki"
@@ -59,6 +64,7 @@ technologies:
     conflicts: []
     tags: ["logs", "scalable", "grafana", "labels"]
     version: "3.3.0"
+    ecosystem: "none"
     homepage: "https://grafana.com/oss/loki"
 
   - id: "cloudwatch"
@@ -69,6 +75,7 @@ technologies:
     conflicts: []
     tags: ["logs", "metrics", "alarms", "aws"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://aws.amazon.com/cloudwatch"
 
   # ── Error Tracking ─────────────────────────────────────────────────
@@ -80,6 +87,7 @@ technologies:
     conflicts: []
     tags: ["errors", "performance", "replay", "traces"]
     version: "8.47.0"
+    package: "@sentry/node"
     homepage: "https://sentry.io"
 
   - id: "rollbar"
@@ -90,4 +98,5 @@ technologies:
     conflicts: []
     tags: ["errors", "realtime", "debugging", "automation"]
     version: "2024.1"
+    ecosystem: "none"
     homepage: "https://rollbar.com"

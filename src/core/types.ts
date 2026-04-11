@@ -33,7 +33,9 @@ export interface Technology {
   requires?: string[];
   conflicts?: string[];
   tags?: string[];
-  version: string;
+  version?: string;
+  package?: string;
+  ecosystem?: string;
   homepage?: string;
 }
 
