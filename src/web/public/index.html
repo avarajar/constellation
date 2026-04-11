@@ -67,7 +67,13 @@
 
         <div class="field">
           <label for="outputDir">Output Directory</label>
-          <input type="text" id="outputDir" placeholder="/Users/joselito/projects/my-awesome-app">
+          <div class="output-dir-row">
+            <div class="output-dir-input-wrapper">
+              <input type="text" id="outputDir" placeholder="/Users/joselito/projects/my-awesome-app" autocomplete="off">
+              <div class="dir-autocomplete hidden" id="dirAutocomplete"></div>
+            </div>
+            <button type="button" class="btn btn-ghost btn-browse" id="btnBrowse">Browse</button>
+          </div>
           <span class="field-hint" id="outputDirHint">Where the project will be generated.</span>
           <span class="field-resolved-path" id="resolvedPath"></span>
         </div>
@@ -222,6 +228,24 @@
         </div>
       </div>
     </section>
+  </template>
+
+  <!-- Browse Directory Modal -->
+  <template id="tpl-browse-modal">
+    <div class="browse-modal">
+      <div class="browse-modal-content">
+        <div class="browse-modal-header">
+          <h3>Choose Directory</h3>
+          <button class="browse-modal-close">&times;</button>
+        </div>
+        <div class="browse-breadcrumb" id="browseBreadcrumb"></div>
+        <div class="browse-dirs-list" id="browseDirsList"></div>
+        <div class="browse-modal-footer">
+          <button class="btn btn-ghost btn-new-folder" id="btnNewFolder">New Folder</button>
+          <button class="btn btn-primary btn-select-folder" id="btnSelectFolder">Select This Folder</button>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script src="app.js"></script>
