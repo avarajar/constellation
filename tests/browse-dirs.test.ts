@@ -20,35 +20,35 @@ describe('listDirectories()', () => {
     rmSync(testDir, { recursive: true, force: true });
   });
 
-  it('lists visible subdirectories', () => {
-    const result = listDirectories(testDir);
+  it('lists visible subdirectories', async () => {
+    const result = await listDirectories(testDir);
     expect(result.dirs).toContain('documents');
     expect(result.dirs).toContain('projects');
   });
 
-  it('excludes hidden directories', () => {
-    const result = listDirectories(testDir);
+  it('excludes hidden directories', async () => {
+    const result = await listDirectories(testDir);
     expect(result.dirs).not.toContain('.hidden');
   });
 
-  it('excludes node_modules', () => {
-    const result = listDirectories(testDir);
+  it('excludes node_modules', async () => {
+    const result = await listDirectories(testDir);
     expect(result.dirs).not.toContain('node_modules');
   });
 
-  it('returns parent path', () => {
-    const result = listDirectories(testDir);
+  it('returns parent path', async () => {
+    const result = await listDirectories(testDir);
     expect(result.parent).toBeTruthy();
   });
 
-  it('returns sorted directories', () => {
-    const result = listDirectories(testDir);
+  it('returns sorted directories', async () => {
+    const result = await listDirectories(testDir);
     const sorted = [...result.dirs].sort();
     expect(result.dirs).toEqual(sorted);
   });
 
-  it('returns empty dirs for nonexistent path', () => {
-    const result = listDirectories('/nonexistent/path/xyz');
+  it('returns empty dirs for nonexistent path', async () => {
+    const result = await listDirectories('/nonexistent/path/xyz');
     expect(result.dirs).toEqual([]);
   });
 });

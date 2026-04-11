@@ -450,13 +450,6 @@ function renderStep1() {
     }
   });
 
-  // Hide autocomplete on outside click
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.output-dir-input-wrapper')) {
-      hideDirAutocomplete();
-    }
-  });
-
   // Browse button
   const browseBtn = $('#btnBrowse', section);
   if (browseBtn) {
@@ -1419,5 +1412,12 @@ async function init() {
 
   render();
 }
+
+// Hide directory autocomplete on outside click (attached once globally)
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.output-dir-input-wrapper')) {
+    hideDirAutocomplete();
+  }
+});
 
 document.addEventListener('DOMContentLoaded', init);

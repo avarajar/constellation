@@ -138,13 +138,13 @@ export function startServer(port: number, options?: ServerOptions): Server {
 
       if (pathname === '/api/browse-dirs' && method === 'GET') {
         const dirPath = url.searchParams.get('path') || '';
-        handleBrowseDirs(dirPath, res);
+        await handleBrowseDirs(dirPath, res);
         return;
       }
 
       if (pathname === '/api/create-dir' && method === 'POST') {
         const body = await parseBody(req);
-        handleCreateDir(body, res);
+        await handleCreateDir(body, res);
         return;
       }
 

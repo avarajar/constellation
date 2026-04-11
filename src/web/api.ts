@@ -2,8 +2,7 @@
  * API route handlers for the Constellation web server.
  */
 import type { ServerResponse } from 'node:http';
-import { readdirSync, mkdirSync } from 'node:fs';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readdir } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
@@ -280,9 +279,9 @@ export async function handleCreateBlueprint(
 
 const HIDDEN_DIR_PATTERNS = [/^\./, /^node_modules$/, /^__pycache__$/, /^dist$/, /^build$/];
 
-export function listDirectories(dirPath: string): { dirs: string[]; parent: string | null } {
+export async function listDirectories(dirPath: string): Promise<{ dirs: string[]; parent: string | null }> {
   try {
-    const entries = readdirSync(dirPath, { withFileTypes: true });
+    const entries = await readdir(dirPath, { withFileTypes: true });
     const dirs = entries
       .filter((e) => {
         if (!e.isDirectory()) return false;
@@ -291,20 +290,21 @@ export function listDirectories(dirPath: string): { dirs: string[]; parent: stri
       .map((e) => e.name)
       .sort();
 
-    const parent = dirname(dirPath) !== dirPath ? dirname(dirPath) : null;
+    const parentPath = dirname(dirPath);
+    const parent = parentPath !== dirPath ? parentPath : null;
     return { dirs, parent };
   } catch {
     return { dirs: [], parent: null };
   }
 }
 
-export function handleBrowseDirs(path: string, res: ServerResponse): void {
+export async function handleBrowseDirs(path: string, res: ServerResponse): Promise<void> {
   const dirPath = path || homedir();
-  const result = listDirectories(dirPath);
+  const result = await listDirectories(dirPath);
   json(res, 200, result);
 }
 
-export function handleCreateDir(body: unknown, res: ServerResponse): void {
+export async function handleCreateDir(body: unknown, res: ServerResponse): Promise<void> {
   try {
     if (!body || typeof body !== 'object') {
       errorResponse(res, 400, 'Request body must include a "path" string.');
@@ -315,7 +315,7 @@ export function handleCreateDir(body: unknown, res: ServerResponse): void {
       errorResponse(res, 400, '"path" is required.');
       return;
     }
-    mkdirSync(dirPath, { recursive: true });
+    await mkdir(dirPath, { recursive: true });
     json(res, 200, { success: true, path: dirPath });
   } catch (err) {
     errorResponse(res, 500, err instanceof Error ? err.message : String(err));

@@ -178,13 +178,7 @@ class Registry implements TechRegistry {
   async enrichWithVersions(): Promise<void> {
     const versions = await fetchAllVersions(this.technologies);
     for (const tech of this.technologies) {
-      const fetched = versions.get(tech.id);
-      if (fetched) {
-        tech.version = fetched;
-      }
-      if (!tech.version) {
-        tech.version = 'latest';
-      }
+      tech.version = versions.get(tech.id) ?? tech.version ?? 'latest';
     }
   }
 }

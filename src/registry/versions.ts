@@ -90,14 +90,9 @@ const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 let cache: CacheEntry | null = null;
 
-export function isCacheFresh(): boolean {
+function isCacheFresh(): boolean {
   if (!cache) return false;
   return Date.now() - cache.timestamp < CACHE_TTL_MS;
-}
-
-export function getCachedVersion(techId: string): string | undefined {
-  if (!isCacheFresh()) return undefined;
-  return cache!.versions.get(techId);
 }
 
 export function clearVersionCache(): void {
