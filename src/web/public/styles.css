@@ -1573,3 +1573,23 @@ a:hover { color: var(--primary-hover); }
   white-space: nowrap;
   padding: 0.5rem 1rem;
 }
+
+/* ── Workspace Section ──────────────────────────────────── */
+.workspace-section {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border, #333);
+  border-radius: 0.75rem;
+  background: var(--surface-1, #161622);
+}
+
+.workspace-title {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.workspace-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted, #888);
+  margin-bottom: 1rem;
+}

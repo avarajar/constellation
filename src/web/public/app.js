@@ -476,21 +476,6 @@ function renderStep1() {
     btn.setAttribute('aria-checked', btn.dataset.mode === state.project.mode);
   });
 
-  // Monorepo toggle
-  $$('[data-monorepo]', section).forEach(btn => {
-    const val = btn.dataset.monorepo === 'true';
-    btn.classList.toggle('active', val === state.project.monorepo.enabled);
-  });
-
-  // Monorepo tool
-  const toolField = $('.monorepo-tool-field', section);
-  if (state.project.monorepo.enabled) toolField.classList.remove('hidden');
-  if (state.project.monorepo.tool) {
-    $$('[data-monorepo-tool]', section).forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.monorepoTool === state.project.monorepo.tool);
-    });
-  }
-
   // ── GitHub section ──
   const githubNewField = $('#githubNewField', section);
   const githubExistingField = $('#githubExistingField', section);
@@ -629,21 +614,6 @@ function renderStep1() {
       });
     }
 
-    if (btn.dataset.monorepo !== undefined) {
-      state.project.monorepo.enabled = btn.dataset.monorepo === 'true';
-      $$('[data-monorepo]', section).forEach(b => {
-        b.classList.toggle('active', (b.dataset.monorepo === 'true') === state.project.monorepo.enabled);
-      });
-      toolField.classList.toggle('hidden', !state.project.monorepo.enabled);
-    }
-
-    if (btn.dataset.monorepoTool) {
-      state.project.monorepo.tool = btn.dataset.monorepoTool;
-      $$('[data-monorepo-tool]', section).forEach(b => {
-        b.classList.toggle('active', b.dataset.monorepoTool === state.project.monorepo.tool);
-      });
-    }
-
     // GitHub mode toggle
     if (btn.dataset.github) {
       state.github.mode = btn.dataset.github;
@@ -691,6 +661,20 @@ function renderStep1() {
 }
 
 // ── Step 2: Technology Selection ───────────────────────────
+function hasFrontendAndBackend() {
+  const frontendCats = new Set(['frontend', 'css', 'build', 'state']);
+  const backendCats = new Set(['backend']);
+  let hasFE = false;
+  let hasBE = false;
+  for (const tech of state.technologies) {
+    if (state.selected.has(tech.id)) {
+      if (frontendCats.has(tech.category)) hasFE = true;
+      if (backendCats.has(tech.category)) hasBE = true;
+    }
+  }
+  return hasFE && hasBE;
+}
+
 function renderStep2() {
   const section = cloneTemplate('tpl-step2');
   app.appendChild(section);
@@ -722,6 +706,7 @@ function renderStep2() {
       toggleTech(card.dataset.techId);
       renderTechGrid(section);
       updateGroupCounts(section);
+      updateWorkspaceVisibility();
       return;
     }
 
@@ -748,6 +733,42 @@ function renderStep2() {
       toggleTech(card.dataset.techId);
       renderTechGrid(section);
       updateGroupCounts(section);
+    }
+  });
+
+  // Workspace section — show/hide based on selection
+  function updateWorkspaceVisibility() {
+    const ws = $('#workspaceSection', section);
+    if (!ws) return;
+    if (hasFrontendAndBackend()) {
+      ws.classList.remove('hidden');
+    } else {
+      ws.classList.add('hidden');
+      state.project.monorepo.enabled = false;
+      state.project.monorepo.tool = null;
+    }
+  }
+  updateWorkspaceVisibility();
+
+  // Workspace toggle events
+  section.addEventListener('click', (e) => {
+    const wsBtn = e.target.closest('[data-workspace]');
+    if (wsBtn) {
+      state.project.monorepo.enabled = wsBtn.dataset.workspace === 'true';
+      $$('[data-workspace]', section).forEach(b => {
+        b.classList.toggle('active', (b.dataset.workspace === 'true') === state.project.monorepo.enabled);
+        b.setAttribute('aria-checked', (b.dataset.workspace === 'true') === state.project.monorepo.enabled);
+      });
+      const toolField = $('#workspaceToolField', section);
+      if (toolField) toolField.classList.toggle('hidden', !state.project.monorepo.enabled);
+    }
+
+    const toolBtn = e.target.closest('[data-workspace-tool]');
+    if (toolBtn) {
+      state.project.monorepo.tool = toolBtn.dataset.workspaceTool;
+      $$('[data-workspace-tool]', section).forEach(b => {
+        b.classList.toggle('active', b.dataset.workspaceTool === state.project.monorepo.tool);
+      });
     }
   });
 }
