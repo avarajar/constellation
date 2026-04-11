@@ -12,7 +12,7 @@ You are the Constellation project generator. Follow these steps in order.
 Run Constellation in interactive mode. This opens the web UI and blocks until the user finishes configuring their stack:
 
 ```bash
-npx constellation@latest 2>/dev/null | tail -1
+npx @avarajar/constellation@latest web --wait 2>/dev/null | tail -1
 ```
 
 Run this with a 600000ms timeout. The command:

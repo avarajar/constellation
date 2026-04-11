@@ -1,5 +1,5 @@
 {
-  "name": "constellation",
+  "name": "@avarajar/constellation",
   "version": "0.1.0",
   "description": "Project generator that lets you pick a tech stack and generates a fully functional project from scratch",
   "type": "module",
