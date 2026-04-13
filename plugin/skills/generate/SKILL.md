@@ -93,9 +93,10 @@ For each non-null stack section, spawn a sub-agent. **Run all applicable agents 
 | Frontend agent | `stack.frontend.framework` is not null |
 | Backend agent | `stack.backend.framework` is not null |
 | Database agent | `stack.database.primary` is not null |
-| Infrastructure agent | containerization or cicd is not null |
+| Infrastructure agent | containerization or cicd or cloud is not null |
 | Testing agent | any testing tool is not null |
 | Monitoring agent | any monitoring tool is not null |
+| Security agent | always spawn (when backend exists) |
 | Common agent | always spawn |
 
 **IMPORTANT: In each sub-agent's prompt, include:**

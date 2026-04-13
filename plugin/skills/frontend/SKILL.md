@@ -19,46 +19,80 @@ Either read from a Constellation blueprint YAML (`stack.frontend` section), or a
 
 **DO NOT SKIP THIS STEP. DO NOT USE VERSIONS FROM YOUR TRAINING DATA.**
 
-Run these commands to get real latest versions for ALL dependencies you will use:
-
 ```bash
-npm view react version
-npm view react-dom version
-npm view vue version
-npm view svelte version
-npm view next version
-npm view nuxt version
-npm view astro version
-npm view @angular/core version
-npm view solid-js version
-npm view tailwindcss version
-npm view vite version
-npm view @reduxjs/toolkit version
-npm view zustand version
-npm view jotai version
-npm view pinia version
-npm view typescript version
+for pkg in react react-dom vue svelte next nuxt astro @angular/core solid-js tailwindcss vite webpack esbuild @reduxjs/toolkit zustand jotai pinia axios typescript eslint prettier; do
+  ver=$(npm view "$pkg" version 2>/dev/null)
+  [ -n "$ver" ] && echo "$pkg@$ver"
+done
 ```
 
-Run only the ones relevant to the selected stack. **Write down every version. Use ONLY those versions in package.json.**
+Run only the ones relevant to the selected stack. **Write down every version. Use ONLY those in package.json.**
 
 ## What You Generate
 
+### Core Application
 - Project scaffolding for the specified framework
 - CSS solution integration
 - State management setup
 - Build tool configuration
 - A fully working CRUD UI for the specified entity:
-  - List view with all items
+  - List view with all items (table or card grid)
   - Create form with validation
-  - Edit form
-  - Delete confirmation
+  - Edit form (pre-filled)
+  - Delete confirmation dialog
+  - Loading states and error handling
 - TypeScript configuration (if applicable)
 - package.json with the exact versions fetched in Step 0
 - index.html, main entry point, App component
 - Router setup if the framework supports it
-- API service layer that calls the backend REST endpoints
-- Dev scripts: `npm run dev`, `npm run build`, `npm run preview`
+- API service layer that calls the backend REST endpoints (with axios or fetch)
+
+### Linting & Formatting
+- **ESLint** configuration:
+  - `eslint.config.js` (flat config) or `.eslintrc.cjs`
+  - Framework-specific plugins: eslint-plugin-react, eslint-plugin-vue, etc.
+  - TypeScript parser: @typescript-eslint
+- **Prettier** configuration:
+  - `.prettierrc` with sensible defaults (singleQuote, semi, trailingComma)
+  - `.prettierignore`
+- **Biome** as alternative if selected (single tool for lint + format):
+  - `biome.json` configuration
+- Lint script: `"lint": "eslint src/"` or `"lint": "biome lint src/"`
+- Format script: `"format": "prettier --write src/"` or `"format": "biome format --write src/"`
+- Lint + fix script: `"lint:fix": "eslint src/ --fix"`
+
+### Pre-commit Hooks
+- **husky** + **lint-staged**:
+  ```json
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,css}": ["prettier --write"]
+  }
+  ```
+- `prepare` script in package.json: `"prepare": "husky"`
+- `.husky/pre-commit` hook file
+
+### Component Structure
+- Organized directory structure:
+  ```
+  src/
+    components/     # Reusable UI components
+    pages/          # Route pages (or views/)
+    services/       # API service layer
+    store/          # State management
+    hooks/          # Custom hooks (React) or composables (Vue)
+    types/          # TypeScript type definitions
+    utils/          # Utility functions
+  ```
+
+### Dev Scripts
+- `npm run dev` — Start dev server with hot reload
+- `npm run build` — Production build
+- `npm run preview` — Preview production build locally
+- `npm run lint` — Run linter
+- `npm run lint:fix` — Auto-fix lint issues
+- `npm run format` — Format code
+- `npm run type-check` — TypeScript type checking (if TS)
 
 ## Guidelines
 

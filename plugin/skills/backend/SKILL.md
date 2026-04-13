@@ -19,45 +19,32 @@ Either read from a Constellation blueprint YAML (`stack.backend` + `stack.databa
 
 **DO NOT SKIP THIS STEP. DO NOT USE VERSIONS FROM YOUR TRAINING DATA.**
 
-Your training data versions are WRONG. You MUST run these commands to get the real latest versions.
-
-For **Python** projects, run:
+For **Python** projects:
 ```bash
-pip index versions django 2>/dev/null | head -1 || pip install django --dry-run 2>&1 | grep -oP 'django-\K[0-9.]+' | head -1
-pip index versions djangorestframework 2>/dev/null | head -1
-pip index versions django-cors-headers 2>/dev/null | head -1
-pip index versions gunicorn 2>/dev/null | head -1
-pip index versions redis 2>/dev/null | head -1
-pip index versions sentry-sdk 2>/dev/null | head -1
+for pkg in django djangorestframework django-cors-headers gunicorn redis sentry-sdk flask fastapi uvicorn sqlalchemy ruff black; do
+  ver=$(curl -s "https://pypi.org/pypi/$pkg/json" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])" 2>/dev/null)
+  [ -n "$ver" ] && echo "$pkg==$ver"
+done
 ```
 
-If `pip index` doesn't work, use:
+For **Node.js** projects:
 ```bash
-curl -s https://pypi.org/pypi/django/json | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])"
-curl -s https://pypi.org/pypi/djangorestframework/json | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])"
+for pkg in express fastify hono @nestjs/core elysia eslint prettier typescript; do
+  ver=$(npm view "$pkg" version 2>/dev/null)
+  [ -n "$ver" ] && echo "$pkg@$ver"
+done
 ```
 
-For **Node.js** projects, run:
-```bash
-npm view express version
-npm view fastify version
-npm view @nestjs/core version
-npm view hono version
-```
-
-For **Go** projects, check https://proxy.golang.org/{module}/@latest
-
-For **Rust** projects, check https://crates.io/api/v1/crates/{name}
-
-**Write down the versions you got. Use ONLY those versions in all generated files.**
+**Write down the versions. Use ONLY those in all generated files.**
 
 ## What You Generate
 
+### Core Application
 - Server setup with the specified framework
 - Correct language and runtime configuration
 - CORS middleware (if requested)
 - Health check endpoint at GET /health (if requested)
-- Error handling middleware (if requested)
+- Error handling middleware with proper error responses (if requested)
 - Environment variable configuration with `.env` support (if requested)
 - Complete REST API for the CRUD entity:
   - `GET /api/{entities}` — list all with pagination
@@ -68,9 +55,71 @@ For **Rust** projects, check https://crates.io/api/v1/crates/{name}
 - Database connection using the specified ORM (or raw queries if no ORM)
 - Database model/schema for the CRUD entity
 - Migration and seed script (if ORM supports it)
-- Dependency file with the versions fetched in Step 0
-- Dev scripts to run locally: `npm run dev` / `python manage.py runserver` / `go run .` / etc.
 - Dev seed/sample data so the app is usable immediately after setup
+
+### API Documentation
+- Auto-generated API docs:
+  - **Python (FastAPI)**: built-in Swagger at `/docs`
+  - **Python (Django)**: drf-spectacular or drf-yasg for OpenAPI
+  - **Node.js**: swagger-jsdoc + swagger-ui-express or @nestjs/swagger
+  - **Go**: swaggo/swag annotations
+- OpenAPI/Swagger spec file if not auto-generated
+
+### Linting & Formatting
+- **Python**: Ruff for linting + formatting (replaces flake8, isort, black). Include `ruff.toml` or `[tool.ruff]` in `pyproject.toml`:
+  ```toml
+  [tool.ruff]
+  line-length = 120
+  target-version = "py312"
+  [tool.ruff.lint]
+  select = ["E", "F", "I", "N", "W", "UP"]
+  ```
+- **Node.js/TypeScript**: ESLint + Prettier. Include `.eslintrc.cjs` or `eslint.config.js` and `.prettierrc`
+- **Go**: `golangci-lint` with `.golangci.yml`
+- **Rust**: `clippy` (built-in) + `rustfmt.toml`
+- Lint script in the dependency file: `"lint": "ruff check ."` or `"lint": "eslint src/"`
+- Format script: `"format": "ruff format ."` or `"format": "prettier --write ."`
+
+### Pre-commit Hooks
+- **Python**: `.pre-commit-config.yaml` with:
+  - ruff (lint + format)
+  - check-yaml, check-json, trailing-whitespace
+  - detect-secrets
+- **Node.js**: `husky` + `lint-staged` in package.json:
+  ```json
+  "lint-staged": { "*.{ts,tsx}": ["eslint --fix", "prettier --write"] }
+  ```
+  Plus `npx husky init` setup script
+- **Go**: pre-commit with golangci-lint hook
+- Include instructions in README to install pre-commit hooks
+
+### Auth Structure (if applicable)
+- Basic JWT or session-based auth middleware skeleton:
+  - Auth middleware that checks tokens
+  - Login/register endpoint stubs
+  - User model
+  - Token generation utility
+- Not fully implemented — just the structure so it's easy to extend
+
+### Rate Limiting
+- Basic rate limiting middleware:
+  - **Python**: django-ratelimit or slowapi (FastAPI)
+  - **Node.js**: express-rate-limit or @nestjs/throttler
+- Applied to auth and write endpoints
+
+### Structured Logging
+- JSON-formatted logging for production:
+  - **Python**: `structlog` or `python-json-logger`
+  - **Node.js**: `pino` or `winston`
+  - **Go**: `zerolog` or `zap`
+- Log levels: debug, info, warning, error
+- Request/response logging middleware
+
+### Dependency File
+- package.json / requirements.txt / go.mod / Cargo.toml with versions from Step 0
+- Dev scripts: `npm run dev` / `python manage.py runserver` / `go run .`
+- Lint scripts: `npm run lint` / `ruff check .`
+- Format scripts: `npm run format` / `ruff format .`
 
 ## Guidelines
 
