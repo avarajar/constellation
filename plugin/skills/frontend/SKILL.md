@@ -13,6 +13,7 @@ Either read from a Constellation blueprint YAML (`stack.frontend` section), or a
 - **CSS solution**: Tailwind, Styled Components, CSS Modules, Sass, PostCSS
 - **State management**: Redux, Zustand, Jotai, Recoil, Pinia, Vuex
 - **Build tool**: Vite, Webpack, Turbopack, esbuild
+- **Package manager**: npm, yarn, pnpm, bun
 - **CRUD entity**: name and fields for the sample CRUD UI
 
 ## STEP 0 — MANDATORY: Fetch Latest Versions BEFORE Writing Any Code
@@ -85,14 +86,21 @@ Run only the ones relevant to the selected stack. **Write down every version. Us
     utils/          # Utility functions
   ```
 
-### Dev Scripts
-- `npm run dev` — Start dev server with hot reload
-- `npm run build` — Production build
-- `npm run preview` — Preview production build locally
-- `npm run lint` — Run linter
-- `npm run lint:fix` — Auto-fix lint issues
-- `npm run format` — Format code
-- `npm run type-check` — TypeScript type checking (if TS)
+### Dev Scripts (adapt commands to selected package manager)
+Use the selected package manager for ALL commands. Examples with each:
+- **npm**: `npm run dev`, `npm run build`, `npm test`
+- **yarn**: `yarn dev`, `yarn build`, `yarn test`
+- **pnpm**: `pnpm dev`, `pnpm build`, `pnpm test`
+- **bun**: `bun run dev`, `bun run build`, `bun test`
+
+Scripts to include:
+- `dev` — Start dev server with hot reload
+- `build` — Production build
+- `preview` — Preview production build locally
+- `lint` — Run linter
+- `lint:fix` — Auto-fix lint issues
+- `format` — Format code
+- `type-check` — TypeScript type checking (if TS)
 
 ## Guidelines
 

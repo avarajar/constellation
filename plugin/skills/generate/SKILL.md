@@ -29,11 +29,18 @@ Read the blueprint YAML file from the path captured in Step 1.
 
 Parse and understand every section:
 - `project.name`, `project.description`, `project.outputDir`
-- `stack.frontend`, `stack.backend`, `stack.database`
-- `stack.infrastructure`, `stack.testing`, `stack.monitoring`
+- `stack.frontend` (framework, CSS, build tool, state management, **package manager**)
+- `stack.backend` (framework, language, runtime, **package manager**)
+- `stack.database`, `stack.infrastructure`, `stack.testing`, `stack.monitoring`
 - `generation.crudEntity`, `generation.crudFields`, `generation.features`
 - `generation.docker`, `generation.ci`
 - `github.mode`, `github.org`, `github.repoName`, `github.existingRepo`
+- `versions` — the dynamically fetched latest versions for all selected technologies
+
+If the blueprint doesn't specify a package manager, ask the user:
+- **Frontend**: npm, yarn, pnpm, or bun?
+- **Backend (Python)**: pip, uv, poetry, or pipenv?
+- **Backend (Node.js)**: npm, yarn, pnpm, or bun?
 
 Summarize the blueprint briefly, then proceed to Step 3.
 

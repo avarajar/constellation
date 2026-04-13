@@ -11,6 +11,12 @@ Generate the `backend/` directory with a complete, working backend application.
 Either read from a Constellation blueprint YAML (`stack.backend` + `stack.database` sections), or accept these inputs directly:
 - **Framework**: Express, Fastify, Hono, NestJS, Elysia, Django, Flask, FastAPI, Starlette, Gin, Echo, Chi, Actix, Axum, Rocket, Spring Boot, Quarkus, ASP.NET Core
 - **Language/Runtime**: TypeScript/Node.js, Python, Go, Rust, Java, C#
+- **Package Manager**:
+  - **Python**: pip (requirements.txt), uv (uv.lock + pyproject.toml), poetry (pyproject.toml + poetry.lock), pipenv (Pipfile + Pipfile.lock)
+  - **Node.js**: npm (package-lock.json), yarn (yarn.lock), pnpm (pnpm-lock.yaml), bun (bun.lockb)
+  - **Go**: go modules (go.mod) — no alternatives
+  - **Rust**: cargo (Cargo.lock) — no alternatives
+  - **Java**: Maven (pom.xml), Gradle (build.gradle)
 - **Database + ORM** (optional): PostgreSQL/MySQL/MongoDB + Prisma/TypeORM/SQLAlchemy/etc.
 - **CRUD entity**: name and fields for the sample REST API
 - **Features**: CORS, health check, error handling, env config
@@ -115,11 +121,21 @@ done
 - Log levels: debug, info, warning, error
 - Request/response logging middleware
 
-### Dependency File
-- package.json / requirements.txt / go.mod / Cargo.toml with versions from Step 0
-- Dev scripts: `npm run dev` / `python manage.py runserver` / `go run .`
-- Lint scripts: `npm run lint` / `ruff check .`
-- Format scripts: `npm run format` / `ruff format .`
+### Dependency File (use the selected package manager)
+
+**Python:**
+- **pip**: `requirements.txt` + `requirements-dev.txt` with pinned versions from Step 0
+- **uv**: `pyproject.toml` with `[project.dependencies]` + `uv.lock`. Use `uv run`, `uv sync`, `uv add` commands in scripts.
+- **poetry**: `pyproject.toml` with `[tool.poetry.dependencies]` + `poetry.lock`. Use `poetry run`, `poetry install`, `poetry add` commands.
+- **pipenv**: `Pipfile` + `Pipfile.lock`. Use `pipenv run`, `pipenv install` commands.
+
+**Node.js:**
+- **npm**: `package.json` + `package-lock.json`. Use `npm run`, `npm install` commands.
+- **yarn**: `package.json` + `yarn.lock`. Use `yarn`, `yarn add` commands.
+- **pnpm**: `package.json` + `pnpm-lock.yaml`. Use `pnpm run`, `pnpm add` commands. Include `.npmrc` with `shamefully-hoist=true` if needed.
+- **bun**: `package.json` + `bun.lockb`. Use `bun run`, `bun add` commands.
+
+**All:** include dev scripts for run, lint, format, test. Adapt all Makefile/script commands to use the selected package manager (e.g., `pnpm run dev` instead of `npm run dev`).
 
 ## Guidelines
 
