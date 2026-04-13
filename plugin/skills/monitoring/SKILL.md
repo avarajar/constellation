@@ -19,15 +19,19 @@ Either read from a Constellation blueprint YAML (`stack.monitoring` section), or
 - Configuration files (sentry.properties, datadog.yaml, etc.)
 - Structured logging setup with appropriate log levels
 - Health/metrics endpoint exposure (if Prometheus)
-- Docker Compose services for self-hosted tools
+- Docker Compose services for self-hosted tools (Grafana, Prometheus, Loki, ELK)
+- Dashboard configuration files (Grafana JSON dashboards if applicable)
 - Environment variable templates for API keys/DSNs
+- Alerting rules (if Prometheus/Grafana)
 
 ## Guidelines
 
 - Initialize monitoring early in the application lifecycle
 - Use structured logging (JSON) for production
 - Include both development and production configurations
-- Error tracking should capture unhandled exceptions automatically
+- Error tracking must capture unhandled exceptions automatically
+- **CRITICAL: Use the EXACT versions from the blueprint YAML** for monitoring SDK packages. Do NOT guess versions.
+- Self-hosted tools should have Docker Compose services with health checks
 
 ## Standalone Usage
 
@@ -35,4 +39,5 @@ To add monitoring to an existing project:
 
 1. Ask which monitoring tools the user wants
 2. Detect existing framework and language
-3. Generate initialization code and configs
+3. Run `npm view <package> version` to get latest SDK versions
+4. Generate initialization code, configs, and Docker services

@@ -27,20 +27,22 @@ Either read from a Constellation blueprint YAML (`stack.frontend` section), or a
   - Edit form
   - Delete confirmation
 - TypeScript configuration (if applicable)
-- package.json with dependency versions
+- package.json with exact dependency versions
 - index.html, main entry point, App component
 - Router setup if the framework supports it
 - API service layer that calls the backend REST endpoints
+- Dev scripts: `npm run dev`, `npm run build`, `npm run preview`
 
 ## Guidelines
 
 - Generate **real, functional code** — not boilerplate stubs
-- Use current stable versions for all dependencies
+- **CRITICAL: Use the EXACT versions from the blueprint YAML.** The blueprint contains dynamically fetched latest versions from npm/pypi/crates. Do NOT use versions from your training data — they are outdated. If the blueprint says `react: 19.2.5`, use `"react": "^19.2.5"` in package.json.
 - All code must be properly formatted with consistent style
 - Include appropriate error handling
 - Frontend must connect to the backend API with proper error states and loading indicators
 - The CRUD entity name and fields drive ALL generated code
 - Pluralize the entity name for REST routes (e.g., "Item" → "/api/items")
+- The app must start and run with `npm run dev` out of the box
 
 ## Standalone Usage
 
@@ -49,4 +51,5 @@ To add a frontend to an existing project without the full Constellation flow:
 1. Ask the user which framework, CSS, state management, and build tool they want
 2. Ask for the output directory
 3. Ask for CRUD entity details (or skip CRUD if not needed)
-4. Generate the frontend/ directory following the guidelines above
+4. Run `npm view <package> version` to get the latest version of each dependency before generating
+5. Generate the frontend/ directory following the guidelines above

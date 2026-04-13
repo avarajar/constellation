@@ -35,6 +35,8 @@ Parse and understand every section:
 - `generation.docker`, `generation.ci`
 - `github.mode`, `github.org`, `github.repoName`, `github.existingRepo`
 
+**IMPORTANT:** The blueprint contains dynamically fetched LATEST versions for all technologies. These versions are accurate and current. Your training data versions are outdated — always use the versions from the blueprint.
+
 Summarize the blueprint briefly, then proceed immediately to generation.
 
 ## Step 3: Generate the Project
@@ -56,13 +58,15 @@ For each non-null stack section, spawn a sub-agent using the corresponding Const
 | `stack.monitoring` | `constellation:monitoring` | any monitoring tool is not null |
 | (always) | `constellation:common` | always spawn |
 
-Pass the full blueprint to each sub-agent so it has all context.
+**Pass the full blueprint YAML text to each sub-agent.** Explicitly tell each sub-agent: "Use the EXACT versions from this blueprint. Do NOT use versions from your training data."
 
 ## Step 4: Verify
 
 After all agents complete:
 - Check that key files exist (package.json or equivalent entry points, main source files)
+- Verify that dependency versions in generated files match the blueprint versions
 - If TypeScript, attempt `npx tsc --noEmit` in relevant directories
+- Verify `make dev` or `scripts/dev.sh` exists and the project can start locally
 - Fix any issues found
 - Report a brief summary of what was generated
 
@@ -103,10 +107,11 @@ Show the user:
 > - **Name:** (project name)
 > - **Path:** (output directory)
 > - **Repo:** (repo URL or "local only")
-> - **Stack:** (brief summary)
+> - **Stack:** (brief summary with versions)
 >
-> **Next steps:**
+> **Quick start:**
 > ```bash
 > cd <outputDir>
-> # Follow README.md for full setup instructions
+> make setup   # Install deps, create .env, run migrations, seed data
+> make dev     # Start all services locally
 > ```
