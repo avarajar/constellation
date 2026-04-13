@@ -76,7 +76,7 @@ export interface ProjectSelection {
   options?: {
     frontendPkgManager?: 'npm' | 'yarn' | 'pnpm' | 'bun';
     backendPkgManager?: 'pip' | 'uv' | 'poetry' | 'pipenv' | 'npm' | 'yarn' | 'pnpm' | 'bun';
-    cloudDeployModel?: string;
+    cloudDeployModel?: Record<string, string>;
     frontendLinter?: 'eslint' | 'biome';
     backendLinter?: 'ruff' | 'flake8' | 'eslint' | 'biome' | 'golangci-lint' | 'clippy';
     security?: boolean;

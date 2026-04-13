@@ -15,7 +15,7 @@ const state = {
     options: {
       frontendPkgManager: 'npm',
       backendPkgManager: 'uv',
-      cloudDeployModel: null,
+      cloudDeployModel: {},
       frontendLinter: 'eslint',
       backendLinter: 'ruff',
       security: true,
@@ -691,13 +691,10 @@ function getSelectedBackendLanguage() {
   return null;
 }
 
-function getSelectedCloudProvider() {
-  for (const tech of state.technologies) {
-    if (state.selected.has(tech.id) && tech.category === 'cloud') {
-      return tech.id;
-    }
-  }
-  return null;
+function getSelectedCloudProviders() {
+  return state.technologies
+    .filter(t => state.selected.has(t.id) && t.category === 'cloud')
+    .map(t => t.id);
 }
 
 // ── Step 2: Technology Selection ───────────────────────────
@@ -799,8 +796,9 @@ function renderStep2() {
     const fe = hasAnyFrontend();
     const be = hasAnyBackend();
     const beLang = getSelectedBackendLanguage();
-    const cloudProvider = getSelectedCloudProvider();
-    const cloudMajor = ['aws', 'azure', 'gcp'].includes(cloudProvider);
+    const cloudProviders = getSelectedCloudProviders();
+    const majorClouds = cloudProviders.filter(p => ['aws', 'azure', 'gcp'].includes(p));
+    const cloudMajor = majorClouds.length > 0;
 
     // Show parent section if any sub-section would be visible
     const anyVisible = fe || be || cloudMajor;
@@ -859,20 +857,35 @@ function renderStep2() {
       optCloud.classList.toggle('hidden', !cloudMajor);
       if (cloudMajor) {
         const cloudConfigs = {
-          aws:   [{ val: 'ecs-fargate', label: 'ECS Fargate' }, { val: 'ec2', label: 'EC2' }, { val: 'lambda', label: 'Lambda' }, { val: 'app-runner', label: 'App Runner' }],
-          azure: [{ val: 'container-apps', label: 'Container Apps' }, { val: 'app-service', label: 'App Service' }, { val: 'aks', label: 'AKS' }, { val: 'functions', label: 'Functions' }],
-          gcp:   [{ val: 'cloud-run', label: 'Cloud Run' }, { val: 'app-engine', label: 'App Engine' }, { val: 'gke', label: 'GKE' }, { val: 'cloud-functions', label: 'Cloud Functions' }],
+          aws:   { label: 'AWS', options: [{ val: 'ecs-fargate', label: 'ECS Fargate' }, { val: 'ec2', label: 'EC2' }, { val: 'lambda', label: 'Lambda' }, { val: 'app-runner', label: 'App Runner' }], default: 'ecs-fargate' },
+          azure: { label: 'Azure', options: [{ val: 'container-apps', label: 'Container Apps' }, { val: 'app-service', label: 'App Service' }, { val: 'aks', label: 'AKS' }, { val: 'functions', label: 'Functions' }], default: 'container-apps' },
+          gcp:   { label: 'GCP', options: [{ val: 'cloud-run', label: 'Cloud Run' }, { val: 'app-engine', label: 'App Engine' }, { val: 'gke', label: 'GKE' }, { val: 'cloud-functions', label: 'Cloud Functions' }], default: 'cloud-run' },
         };
-        const defaults = { aws: 'ecs-fargate', azure: 'container-apps', gcp: 'cloud-run' };
-        const opts = cloudConfigs[cloudProvider] || [];
-        // Reset if current value not valid for this provider
-        const validVals = opts.map(o => o.val);
-        if (!validVals.includes(state.project.options.cloudDeployModel)) {
-          state.project.options.cloudDeployModel = defaults[cloudProvider] || validVals[0] || null;
+
+        // Initialize cloudDeployModel as object if not already
+        if (!state.project.options.cloudDeployModel || typeof state.project.options.cloudDeployModel === 'string') {
+          state.project.options.cloudDeployModel = {};
         }
-        cloudGroup.innerHTML = opts.map(o =>
-          `<button class="toggle-btn${state.project.options.cloudDeployModel === o.val ? ' active' : ''}" data-cloud-deploy="${escHtml(o.val)}">${escHtml(o.label)}</button>`
-        ).join('');
+
+        let html = '';
+        for (const provider of majorClouds) {
+          const config = cloudConfigs[provider];
+          if (!config) continue;
+
+          // Set default for this provider if not set
+          if (!state.project.options.cloudDeployModel[provider]) {
+            state.project.options.cloudDeployModel[provider] = config.default;
+          }
+
+          const currentVal = state.project.options.cloudDeployModel[provider];
+          html += `<label class="options-cloud-label">${escHtml(config.label)} Deployment</label>`;
+          html += '<div class="toggle-group" role="radiogroup">';
+          html += config.options.map(o =>
+            `<button class="toggle-btn${currentVal === o.val ? ' active' : ''}" data-cloud-deploy="${escHtml(o.val)}" data-cloud-provider="${escHtml(provider)}">${escHtml(o.label)}</button>`
+          ).join('');
+          html += '</div>';
+        }
+        cloudGroup.innerHTML = html;
       }
     }
 
@@ -980,8 +993,15 @@ function renderStep2() {
     }
 
     if (btn.dataset.cloudDeploy) {
-      state.project.options.cloudDeployModel = btn.dataset.cloudDeploy;
-      $$('[data-cloud-deploy]', section).forEach(b => b.classList.toggle('active', b.dataset.cloudDeploy === state.project.options.cloudDeployModel));
+      const provider = btn.dataset.cloudProvider;
+      if (typeof state.project.options.cloudDeployModel !== 'object' || !state.project.options.cloudDeployModel) {
+        state.project.options.cloudDeployModel = {};
+      }
+      state.project.options.cloudDeployModel[provider] = btn.dataset.cloudDeploy;
+      // Only toggle buttons for the same provider
+      $$(`[data-cloud-provider="${provider}"]`, section).forEach(b =>
+        b.classList.toggle('active', b.dataset.cloudDeploy === state.project.options.cloudDeployModel[provider])
+      );
       return;
     }
 
@@ -1441,7 +1461,7 @@ function renderStep3() {
         options: {
           frontendPkgManager: 'npm',
           backendPkgManager: 'uv',
-          cloudDeployModel: null,
+          cloudDeployModel: {},
           frontendLinter: 'eslint',
           backendLinter: 'ruff',
           security: true,

@@ -76,7 +76,7 @@ interface BlueprintStack {
   frontend: Record<string, string | null>;
   backend: Record<string, string | null>;
   database: Record<string, string | null>;
-  infrastructure: Record<string, string | null>;
+  infrastructure: Record<string, unknown>;
   testing: Record<string, string | null>;
   monitoring: Record<string, string | null>;
   security: { enabled: boolean };
@@ -112,12 +112,16 @@ function buildStack(technologies: Technology[], selection: ProjectSelection): Bl
     cache: techId(technologies, 'cache'),
   };
 
-  const infrastructure: Record<string, string | null> = {
+  // Collect all selected cloud providers
+  const cloudProviders = technologies.filter(t => t.category === 'cloud').map(t => t.id);
+  const deployModels = selection.options?.cloudDeployModel ?? {};
+
+  const infrastructure: Record<string, unknown> = {
     containerization: techId(technologies, 'containerization'),
     orchestration: techId(technologies, 'orchestration'),
     cicd: techId(technologies, 'cicd'),
-    cloud: techId(technologies, 'cloud'),
-    cloudDeployModel: selection.options?.cloudDeployModel ?? null,
+    cloud: cloudProviders.length > 0 ? cloudProviders : null,
+    cloudDeployModel: Object.keys(deployModels).length > 0 ? deployModels : null,
   };
 
   const testing: Record<string, string | null> = {
