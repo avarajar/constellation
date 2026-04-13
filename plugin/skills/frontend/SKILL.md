@@ -15,6 +15,33 @@ Either read from a Constellation blueprint YAML (`stack.frontend` section), or a
 - **Build tool**: Vite, Webpack, Turbopack, esbuild
 - **CRUD entity**: name and fields for the sample CRUD UI
 
+## STEP 0 — MANDATORY: Fetch Latest Versions BEFORE Writing Any Code
+
+**DO NOT SKIP THIS STEP. DO NOT USE VERSIONS FROM YOUR TRAINING DATA.**
+
+Run these commands to get real latest versions for ALL dependencies you will use:
+
+```bash
+npm view react version
+npm view react-dom version
+npm view vue version
+npm view svelte version
+npm view next version
+npm view nuxt version
+npm view astro version
+npm view @angular/core version
+npm view solid-js version
+npm view tailwindcss version
+npm view vite version
+npm view @reduxjs/toolkit version
+npm view zustand version
+npm view jotai version
+npm view pinia version
+npm view typescript version
+```
+
+Run only the ones relevant to the selected stack. **Write down every version. Use ONLY those versions in package.json.**
+
 ## What You Generate
 
 - Project scaffolding for the specified framework
@@ -27,7 +54,7 @@ Either read from a Constellation blueprint YAML (`stack.frontend` section), or a
   - Edit form
   - Delete confirmation
 - TypeScript configuration (if applicable)
-- package.json with exact dependency versions
+- package.json with the exact versions fetched in Step 0
 - index.html, main entry point, App component
 - Router setup if the framework supports it
 - API service layer that calls the backend REST endpoints
@@ -36,7 +63,7 @@ Either read from a Constellation blueprint YAML (`stack.frontend` section), or a
 ## Guidelines
 
 - Generate **real, functional code** — not boilerplate stubs
-- **CRITICAL: Use the EXACT versions from the blueprint YAML.** The blueprint contains dynamically fetched latest versions from npm/pypi/crates. Do NOT use versions from your training data — they are outdated. If the blueprint says `react: 19.2.5`, use `"react": "^19.2.5"` in package.json.
+- **Use ONLY the versions you fetched in Step 0.** Never guess or use memorized versions.
 - All code must be properly formatted with consistent style
 - Include appropriate error handling
 - Frontend must connect to the backend API with proper error states and loading indicators
@@ -51,5 +78,5 @@ To add a frontend to an existing project without the full Constellation flow:
 1. Ask the user which framework, CSS, state management, and build tool they want
 2. Ask for the output directory
 3. Ask for CRUD entity details (or skip CRUD if not needed)
-4. Run `npm view <package> version` to get the latest version of each dependency before generating
+4. **Run Step 0 to fetch latest versions**
 5. Generate the frontend/ directory following the guidelines above

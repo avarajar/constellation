@@ -35,8 +35,6 @@ Parse and understand every section:
 - `generation.docker`, `generation.ci`
 - `github.mode`, `github.org`, `github.repoName`, `github.existingRepo`
 
-**IMPORTANT:** The blueprint contains dynamically fetched LATEST versions for all technologies. These versions are accurate and current. Your training data versions are outdated — always use the versions from the blueprint.
-
 Summarize the blueprint briefly, then proceed immediately to generation.
 
 ## Step 3: Generate the Project
@@ -58,13 +56,13 @@ For each non-null stack section, spawn a sub-agent using the corresponding Const
 | `stack.monitoring` | `constellation:monitoring` | any monitoring tool is not null |
 | (always) | `constellation:common` | always spawn |
 
-**Pass the full blueprint YAML text to each sub-agent.** Explicitly tell each sub-agent: "Use the EXACT versions from this blueprint. Do NOT use versions from your training data."
+**Pass the full blueprint YAML text to each sub-agent.** Each skill has a MANDATORY "Step 0" that fetches latest package versions via npm/pip/curl before writing any code. This ensures all generated dependencies use current versions, not outdated training data.
 
 ## Step 4: Verify
 
 After all agents complete:
 - Check that key files exist (package.json or equivalent entry points, main source files)
-- Verify that dependency versions in generated files match the blueprint versions
+- **Spot-check dependency versions**: pick 2-3 packages from requirements.txt or package.json and run `npm view <pkg> version` or `curl -s https://pypi.org/pypi/<pkg>/json | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])"` to confirm they match current latest. If they don't match, fix them.
 - If TypeScript, attempt `npx tsc --noEmit` in relevant directories
 - Verify `make dev` or `scripts/dev.sh` exists and the project can start locally
 - Fix any issues found
