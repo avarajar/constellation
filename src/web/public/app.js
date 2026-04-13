@@ -12,6 +12,14 @@ const state = {
     outputDir: '',
     mode: 'new',
     monorepo: { enabled: false, tool: null },
+    options: {
+      frontendPkgManager: 'npm',
+      backendPkgManager: 'uv',
+      cloudDeployModel: null,
+      frontendLinter: 'eslint',
+      backendLinter: 'ruff',
+      security: true,
+    },
   },
   github: {
     mode: 'new',        // 'new' | 'existing' | 'none'
@@ -337,6 +345,14 @@ function buildSelectionBody() {
     monorepo: state.project.monorepo.enabled
       ? { enabled: true, tool: state.project.monorepo.tool || 'none' }
       : undefined,
+    options: {
+      frontendPkgManager: state.project.options.frontendPkgManager,
+      backendPkgManager: state.project.options.backendPkgManager,
+      cloudDeployModel: state.project.options.cloudDeployModel,
+      frontendLinter: state.project.options.frontendLinter,
+      backendLinter: state.project.options.backendLinter,
+      security: state.project.options.security,
+    },
     technologies: sel.map(t => ({ id: t.id, category: t.category })),
     github: {
       mode: state.github.mode,
@@ -653,6 +669,37 @@ function renderStep1() {
   nameInput.focus();
 }
 
+// ── Step 2 Helpers ─────────────────────────────────────────
+function hasSelectedCategory(category) {
+  return state.technologies.some(t => state.selected.has(t.id) && t.category === category);
+}
+
+function hasAnyFrontend() {
+  return ['frontend', 'css', 'build', 'state'].some(cat => hasSelectedCategory(cat));
+}
+
+function hasAnyBackend() {
+  return hasSelectedCategory('backend');
+}
+
+function getSelectedBackendLanguage() {
+  for (const tech of state.technologies) {
+    if (state.selected.has(tech.id) && tech.category === 'backend') {
+      return tech.language || null;
+    }
+  }
+  return null;
+}
+
+function getSelectedCloudProvider() {
+  for (const tech of state.technologies) {
+    if (state.selected.has(tech.id) && tech.category === 'cloud') {
+      return tech.id;
+    }
+  }
+  return null;
+}
+
 // ── Step 2: Technology Selection ───────────────────────────
 function hasFrontendAndBackend() {
   const frontendCats = new Set(['frontend', 'css', 'build', 'state']);
@@ -700,6 +747,7 @@ function renderStep2() {
       renderTechGrid(section);
       updateGroupCounts(section);
       updateWorkspaceVisibility();
+      updateOptionsVisibility();
       return;
     }
 
@@ -743,6 +791,155 @@ function renderStep2() {
   }
   updateWorkspaceVisibility();
 
+  // Options section — show/hide sub-sections based on selection
+  function updateOptionsVisibility() {
+    const optSection = $('#optionsSection', section);
+    if (!optSection) return;
+
+    const fe = hasAnyFrontend();
+    const be = hasAnyBackend();
+    const beLang = getSelectedBackendLanguage();
+    const cloudProvider = getSelectedCloudProvider();
+    const cloudMajor = ['aws', 'azure', 'gcp'].includes(cloudProvider);
+
+    // Show parent section if any sub-section would be visible
+    const anyVisible = fe || be || cloudMajor;
+    optSection.classList.toggle('hidden', !anyVisible);
+
+    // Frontend package manager
+    const optFePkg = $('#optFePkgManager', section);
+    if (optFePkg) {
+      optFePkg.classList.toggle('hidden', !fe);
+      if (fe) {
+        $$('[data-fe-pkg]', optFePkg).forEach(b => {
+          b.classList.toggle('active', b.dataset.fePkg === state.project.options.frontendPkgManager);
+        });
+      }
+    }
+
+    // Backend package manager (Python or Node.js only)
+    const optBePkg = $('#optBePkgManager', section);
+    const bePkgGroup = $('#bePkgGroup', section);
+    if (optBePkg && bePkgGroup) {
+      const showBePkg = be && (beLang === 'python' || beLang === 'typescript' || beLang === 'javascript');
+      optBePkg.classList.toggle('hidden', !showBePkg);
+      if (showBePkg) {
+        let buttons;
+        if (beLang === 'python') {
+          buttons = [
+            { val: 'uv', label: 'uv' },
+            { val: 'pip', label: 'pip' },
+            { val: 'poetry', label: 'poetry' },
+            { val: 'pipenv', label: 'pipenv' },
+          ];
+          if (!['pip', 'uv', 'poetry', 'pipenv'].includes(state.project.options.backendPkgManager)) {
+            state.project.options.backendPkgManager = 'uv';
+          }
+        } else {
+          buttons = [
+            { val: 'npm', label: 'npm' },
+            { val: 'yarn', label: 'yarn' },
+            { val: 'pnpm', label: 'pnpm' },
+            { val: 'bun', label: 'bun' },
+          ];
+          if (!['npm', 'yarn', 'pnpm', 'bun'].includes(state.project.options.backendPkgManager)) {
+            state.project.options.backendPkgManager = 'npm';
+          }
+        }
+        bePkgGroup.innerHTML = buttons.map(b =>
+          `<button class="toggle-btn${state.project.options.backendPkgManager === b.val ? ' active' : ''}" data-be-pkg="${escHtml(b.val)}">${escHtml(b.label)}</button>`
+        ).join('');
+      }
+    }
+
+    // Cloud deployment model
+    const optCloud = $('#optCloudDeploy', section);
+    const cloudGroup = $('#cloudDeployGroup', section);
+    if (optCloud && cloudGroup) {
+      optCloud.classList.toggle('hidden', !cloudMajor);
+      if (cloudMajor) {
+        const cloudConfigs = {
+          aws:   [{ val: 'ecs-fargate', label: 'ECS Fargate' }, { val: 'ec2', label: 'EC2' }, { val: 'lambda', label: 'Lambda' }, { val: 'app-runner', label: 'App Runner' }],
+          azure: [{ val: 'container-apps', label: 'Container Apps' }, { val: 'app-service', label: 'App Service' }, { val: 'aks', label: 'AKS' }, { val: 'functions', label: 'Functions' }],
+          gcp:   [{ val: 'cloud-run', label: 'Cloud Run' }, { val: 'app-engine', label: 'App Engine' }, { val: 'gke', label: 'GKE' }, { val: 'cloud-functions', label: 'Cloud Functions' }],
+        };
+        const defaults = { aws: 'ecs-fargate', azure: 'container-apps', gcp: 'cloud-run' };
+        const opts = cloudConfigs[cloudProvider] || [];
+        // Reset if current value not valid for this provider
+        const validVals = opts.map(o => o.val);
+        if (!validVals.includes(state.project.options.cloudDeployModel)) {
+          state.project.options.cloudDeployModel = defaults[cloudProvider] || validVals[0] || null;
+        }
+        cloudGroup.innerHTML = opts.map(o =>
+          `<button class="toggle-btn${state.project.options.cloudDeployModel === o.val ? ' active' : ''}" data-cloud-deploy="${escHtml(o.val)}">${escHtml(o.label)}</button>`
+        ).join('');
+      }
+    }
+
+    // Frontend linter
+    const optFeLinter = $('#optFeLinter', section);
+    if (optFeLinter) {
+      optFeLinter.classList.toggle('hidden', !fe);
+      if (fe) {
+        $$('[data-fe-linter]', optFeLinter).forEach(b => {
+          b.classList.toggle('active', b.dataset.feLinter === state.project.options.frontendLinter);
+        });
+      }
+    }
+
+    // Backend linter
+    const optBeLinter = $('#optBeLinter', section);
+    const beLinterGroup = $('#beLinterGroup', section);
+    if (optBeLinter && beLinterGroup) {
+      optBeLinter.classList.toggle('hidden', !be);
+      if (be) {
+        let content = '';
+        if (beLang === 'python') {
+          if (!['ruff', 'flake8'].includes(state.project.options.backendLinter)) {
+            state.project.options.backendLinter = 'ruff';
+          }
+          content = [
+            { val: 'ruff', label: 'Ruff' },
+            { val: 'flake8', label: 'Flake8 + Black' },
+          ].map(b =>
+            `<button class="toggle-btn${state.project.options.backendLinter === b.val ? ' active' : ''}" data-be-linter="${escHtml(b.val)}">${escHtml(b.label)}</button>`
+          ).join('');
+        } else if (beLang === 'typescript' || beLang === 'javascript') {
+          if (!['eslint', 'biome'].includes(state.project.options.backendLinter)) {
+            state.project.options.backendLinter = 'eslint';
+          }
+          content = [
+            { val: 'eslint', label: 'ESLint + Prettier' },
+            { val: 'biome', label: 'Biome' },
+          ].map(b =>
+            `<button class="toggle-btn${state.project.options.backendLinter === b.val ? ' active' : ''}" data-be-linter="${escHtml(b.val)}">${escHtml(b.label)}</button>`
+          ).join('');
+        } else if (beLang === 'go') {
+          state.project.options.backendLinter = 'golangci-lint';
+          content = `<span class="options-label-only">golangci-lint</span>`;
+        } else if (beLang === 'rust') {
+          state.project.options.backendLinter = 'clippy';
+          content = `<span class="options-label-only">clippy + rustfmt</span>`;
+        } else {
+          content = '';
+        }
+        beLinterGroup.innerHTML = content;
+      }
+    }
+
+    // Security
+    const optSec = $('#optSecurity', section);
+    if (optSec) {
+      optSec.classList.toggle('hidden', !be);
+      if (be) {
+        $$('[data-security]', optSec).forEach(b => {
+          b.classList.toggle('active', (b.dataset.security === 'true') === state.project.options.security);
+        });
+      }
+    }
+  }
+  updateOptionsVisibility();
+
   // Workspace toggle events
   section.addEventListener('click', (e) => {
     const wsBtn = e.target.closest('[data-workspace]');
@@ -762,6 +959,48 @@ function renderStep2() {
       $$('[data-workspace-tool]', section).forEach(b => {
         b.classList.toggle('active', b.dataset.workspaceTool === state.project.monorepo.tool);
       });
+    }
+  });
+
+  // Options toggle events
+  section.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    if (btn.dataset.fePkg) {
+      state.project.options.frontendPkgManager = btn.dataset.fePkg;
+      $$('[data-fe-pkg]', section).forEach(b => b.classList.toggle('active', b.dataset.fePkg === state.project.options.frontendPkgManager));
+      return;
+    }
+
+    if (btn.dataset.bePkg) {
+      state.project.options.backendPkgManager = btn.dataset.bePkg;
+      $$('[data-be-pkg]', section).forEach(b => b.classList.toggle('active', b.dataset.bePkg === state.project.options.backendPkgManager));
+      return;
+    }
+
+    if (btn.dataset.cloudDeploy) {
+      state.project.options.cloudDeployModel = btn.dataset.cloudDeploy;
+      $$('[data-cloud-deploy]', section).forEach(b => b.classList.toggle('active', b.dataset.cloudDeploy === state.project.options.cloudDeployModel));
+      return;
+    }
+
+    if (btn.dataset.feLinter) {
+      state.project.options.frontendLinter = btn.dataset.feLinter;
+      $$('[data-fe-linter]', section).forEach(b => b.classList.toggle('active', b.dataset.feLinter === state.project.options.frontendLinter));
+      return;
+    }
+
+    if (btn.dataset.beLinter) {
+      state.project.options.backendLinter = btn.dataset.beLinter;
+      $$('[data-be-linter]', section).forEach(b => b.classList.toggle('active', b.dataset.beLinter === state.project.options.backendLinter));
+      return;
+    }
+
+    if (btn.dataset.security !== undefined && btn.closest('#optSecurity')) {
+      state.project.options.security = btn.dataset.security === 'true';
+      $$('[data-security]', section).forEach(b => b.classList.toggle('active', (b.dataset.security === 'true') === state.project.options.security));
+      return;
     }
   });
 }
@@ -1196,7 +1435,18 @@ function renderStep3() {
     if (btn?.id === 'btnNewProject') {
       // Reset
       state.step = 1;
-      state.project = { name: '', description: '', outputDir: '', mode: 'new', monorepo: { enabled: false, tool: null } };
+      state.project = {
+        name: '', description: '', outputDir: '', mode: 'new',
+        monorepo: { enabled: false, tool: null },
+        options: {
+          frontendPkgManager: 'npm',
+          backendPkgManager: 'uv',
+          cloudDeployModel: null,
+          frontendLinter: 'eslint',
+          backendLinter: 'ruff',
+          security: true,
+        },
+      };
       state.github.mode = 'new';
       state.github.org = null;
       state.github.repoName = '';

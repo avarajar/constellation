@@ -73,6 +73,14 @@ export interface ProjectSelection {
     enabled: boolean;
     tool?: 'turborepo' | 'nx' | 'none';
   };
+  options?: {
+    frontendPkgManager?: 'npm' | 'yarn' | 'pnpm' | 'bun';
+    backendPkgManager?: 'pip' | 'uv' | 'poetry' | 'pipenv' | 'npm' | 'yarn' | 'pnpm' | 'bun';
+    cloudDeployModel?: string;
+    frontendLinter?: 'eslint' | 'biome';
+    backendLinter?: 'ruff' | 'flake8' | 'eslint' | 'biome' | 'golangci-lint' | 'clippy';
+    security?: boolean;
+  };
   technologies: SelectedTech[];
 }
 
