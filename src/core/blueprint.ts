@@ -166,6 +166,14 @@ export function generateBlueprint(selection: ProjectSelection, technologies: Tec
   const stack = buildStack(technologies);
   const generation = buildGeneration(technologies);
 
+  // Build a versions map: techId → version for ALL selected technologies
+  const versions: Record<string, string> = {};
+  for (const tech of technologies) {
+    if (tech.version) {
+      versions[tech.id] = tech.version;
+    }
+  }
+
   const blueprint = {
     project: {
       name: selection.name,
@@ -178,6 +186,7 @@ export function generateBlueprint(selection: ProjectSelection, technologies: Tec
       },
     },
     stack,
+    versions,
     generation,
   };
 

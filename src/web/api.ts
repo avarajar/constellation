@@ -136,8 +136,9 @@ export async function handleGenerate(body: unknown, res: ServerResponse): Promis
       selection.mode = 'new';
     }
 
-    // 1. Create registry and validate
+    // 1. Create registry, enrich versions, and validate
     const registry = createRegistry();
+    await registry.enrichWithVersions();
     const validation = await validateSelection(selection, registry);
 
     if (!validation.valid) {
@@ -233,8 +234,9 @@ export async function handleCreateBlueprint(
       selection.mode = 'new';
     }
 
-    // Resolve technologies from registry
+    // Resolve technologies from registry with latest versions
     const registry = createRegistry();
+    await registry.enrichWithVersions();
     const selectedTechs = selection.technologies
       .map((s) => registry.getById(s.id))
       .filter((t): t is Technology => t !== undefined);
