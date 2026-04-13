@@ -178,6 +178,63 @@
         </div>
       </div>
 
+      <!-- Project Options (shown conditionally) -->
+      <div class="options-section hidden" id="optionsSection">
+        <h3 class="workspace-title">Project Options</h3>
+
+        <!-- Package Managers -->
+        <div class="options-group hidden" id="optFePkgManager">
+          <label>Frontend Package Manager</label>
+          <div class="toggle-group" role="radiogroup">
+            <button class="toggle-btn active" data-fe-pkg="npm">npm</button>
+            <button class="toggle-btn" data-fe-pkg="yarn">yarn</button>
+            <button class="toggle-btn" data-fe-pkg="pnpm">pnpm</button>
+            <button class="toggle-btn" data-fe-pkg="bun">bun</button>
+          </div>
+        </div>
+
+        <div class="options-group hidden" id="optBePkgManager">
+          <label id="bePkgLabel">Backend Package Manager</label>
+          <div class="toggle-group" role="radiogroup" id="bePkgGroup">
+            <!-- filled dynamically based on backend language -->
+          </div>
+        </div>
+
+        <!-- Cloud Deployment -->
+        <div class="options-group hidden" id="optCloudDeploy">
+          <label id="cloudDeployLabel">Deployment Model</label>
+          <div class="toggle-group" role="radiogroup" id="cloudDeployGroup">
+            <!-- filled dynamically based on cloud provider -->
+          </div>
+        </div>
+
+        <!-- Linters -->
+        <div class="options-group hidden" id="optFeLinter">
+          <label>Frontend Linter</label>
+          <div class="toggle-group" role="radiogroup">
+            <button class="toggle-btn active" data-fe-linter="eslint">ESLint + Prettier</button>
+            <button class="toggle-btn" data-fe-linter="biome">Biome</button>
+          </div>
+        </div>
+
+        <div class="options-group hidden" id="optBeLinter">
+          <label>Backend Linter</label>
+          <div class="toggle-group" role="radiogroup" id="beLinterGroup">
+            <!-- filled dynamically based on backend language -->
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="options-group hidden" id="optSecurity">
+          <label>Security Hardening</label>
+          <p class="workspace-hint">OWASP headers, rate limiting, CORS hardening, input sanitization</p>
+          <div class="toggle-group" role="radiogroup">
+            <button class="toggle-btn active" data-security="true">Yes</button>
+            <button class="toggle-btn" data-security="false">No</button>
+          </div>
+        </div>
+      </div>
+
       <div class="step-actions">
         <button class="btn btn-ghost btn-prev" data-dir="prev">
           <span class="btn-arrow">&larr;</span> Back

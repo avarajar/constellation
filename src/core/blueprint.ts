@@ -79,9 +79,10 @@ interface BlueprintStack {
   infrastructure: Record<string, string | null>;
   testing: Record<string, string | null>;
   monitoring: Record<string, string | null>;
+  security: { enabled: boolean };
 }
 
-function buildStack(technologies: Technology[]): BlueprintStack {
+function buildStack(technologies: Technology[], selection: ProjectSelection): BlueprintStack {
   const lang = detectLanguage(technologies);
   const runtime = detectRuntime(technologies);
 
@@ -92,6 +93,8 @@ function buildStack(technologies: Technology[]): BlueprintStack {
     css: techId(technologies, 'css'),
     buildTool: techId(technologies, 'build'),
     stateManagement: techId(technologies, 'state'),
+    packageManager: selection.options?.frontendPkgManager ?? 'npm',
+    linter: selection.options?.frontendLinter ?? 'eslint',
   };
 
   const backend: Record<string, string | null> = {
@@ -99,6 +102,8 @@ function buildStack(technologies: Technology[]): BlueprintStack {
     version: findTech(technologies, 'backend')?.version ?? null,
     language: findTech(technologies, 'backend')?.language ?? lang,
     runtime,
+    packageManager: selection.options?.backendPkgManager ?? 'uv',
+    linter: selection.options?.backendLinter ?? 'ruff',
   };
 
   const database: Record<string, string | null> = {
@@ -112,6 +117,7 @@ function buildStack(technologies: Technology[]): BlueprintStack {
     orchestration: techId(technologies, 'orchestration'),
     cicd: techId(technologies, 'cicd'),
     cloud: techId(technologies, 'cloud'),
+    cloudDeployModel: selection.options?.cloudDeployModel ?? null,
   };
 
   const testing: Record<string, string | null> = {
@@ -126,7 +132,11 @@ function buildStack(technologies: Technology[]): BlueprintStack {
     errorTracking: techId(technologies, 'error-tracking'),
   };
 
-  return { frontend, backend, database, infrastructure, testing, monitoring };
+  const security = {
+    enabled: selection.options?.security ?? true,
+  };
+
+  return { frontend, backend, database, infrastructure, testing, monitoring, security };
 }
 
 function buildGeneration(technologies: Technology[]): Record<string, unknown> {
@@ -163,7 +173,7 @@ function buildGeneration(technologies: Technology[]): Record<string, unknown> {
  * resolved technologies.
  */
 export function generateBlueprint(selection: ProjectSelection, technologies: Technology[]): string {
-  const stack = buildStack(technologies);
+  const stack = buildStack(technologies, selection);
   const generation = buildGeneration(technologies);
 
   // Build a versions map: techId → version for ALL selected technologies

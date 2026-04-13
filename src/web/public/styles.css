@@ -1593,3 +1593,37 @@ a:hover { color: var(--primary-hover); }
   color: var(--text-muted, #888);
   margin-bottom: 1rem;
 }
+
+/* ── Options Section ────────────────────────────────────── */
+.options-section {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border, #333);
+  border-radius: 0.75rem;
+  background: var(--surface-1, #161622);
+}
+
+.options-group {
+  margin-bottom: 1rem;
+}
+
+.options-group:last-child {
+  margin-bottom: 0;
+}
+
+.options-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text, #e0e0e0);
+}
+
+.options-label-only {
+  font-size: 0.85rem;
+  color: var(--text-sec, #8888a0);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border, #2a2a3a);
+  border-radius: var(--radius-sm, 6px);
+  display: inline-block;
+}
