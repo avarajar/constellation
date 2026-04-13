@@ -29,11 +29,18 @@ Read the blueprint YAML file from the path captured in Step 1.
 
 Parse and understand every section:
 - `project.name`, `project.description`, `project.outputDir`
-- `stack.frontend`, `stack.backend`, `stack.database`
-- `stack.infrastructure`, `stack.testing`, `stack.monitoring`
+- `stack.frontend` (framework, CSS, build tool, state management, **package manager**)
+- `stack.backend` (framework, language, runtime, **package manager**)
+- `stack.database`, `stack.infrastructure`, `stack.testing`, `stack.monitoring`
 - `generation.crudEntity`, `generation.crudFields`, `generation.features`
 - `generation.docker`, `generation.ci`
 - `github.mode`, `github.org`, `github.repoName`, `github.existingRepo`
+- `versions` — the dynamically fetched latest versions for all selected technologies
+
+If the blueprint doesn't specify a package manager, ask the user:
+- **Frontend**: npm, yarn, pnpm, or bun?
+- **Backend (Python)**: pip, uv, poetry, or pipenv?
+- **Backend (Node.js)**: npm, yarn, pnpm, or bun?
 
 Summarize the blueprint briefly, then proceed to Step 3.
 
@@ -93,9 +100,10 @@ For each non-null stack section, spawn a sub-agent. **Run all applicable agents 
 | Frontend agent | `stack.frontend.framework` is not null |
 | Backend agent | `stack.backend.framework` is not null |
 | Database agent | `stack.database.primary` is not null |
-| Infrastructure agent | containerization or cicd is not null |
+| Infrastructure agent | containerization or cicd or cloud is not null |
 | Testing agent | any testing tool is not null |
 | Monitoring agent | any monitoring tool is not null |
+| Security agent | always spawn (when backend exists) |
 | Common agent | always spawn |
 
 **IMPORTANT: In each sub-agent's prompt, include:**
