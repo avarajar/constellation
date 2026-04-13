@@ -1,6 +1,6 @@
 {
   "name": "@avarajar/constellation",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Project generator that lets you pick a tech stack and generates a fully functional project from scratch",
   "type": "module",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsup src/index.ts --format esm --dts --clean",
+    "build": "tsup src/index.ts --format esm --dts --clean && cp -R src/web/public dist/public",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src/ --ext .ts",
